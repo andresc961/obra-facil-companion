@@ -40,7 +40,7 @@ function Index() {
           <Languages className="h-4 w-4" /> Hablas español · tu cliente lo recibe en inglés
         </span>
         <h1 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
-          Habla a tu teléfono. <span className="text-primary">Envía tu presupuesto</span> por WhatsApp en 30 segundos.
+          Habla a tu teléfono. <span className="text-primary">Envía tu presupuesto</span> por Mensaje en 30 segundos.
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">Para contratistas y maestros de obra. Habla en español como siempre — el presupuesto y el mensaje salen en inglés si tu cliente lo necesita.</p>
 
