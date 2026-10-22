@@ -1,14 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Mic, FileText, MessageCircle, PenLine, Check } from "lucide-react";
-
+import { Mic, FileText, MessageCircle, PenLine, Check, ArrowDown, Languages } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "ObraFácil — Presupuestos de obra por voz en 30 segundos" },
-      { name: "description", content: "Habla a tu teléfono y envía tu presupuesto en PDF por WhatsApp en 30 segundos. Hecho para contratistas y maestros de obra." },
-      { property: "og:title", content: "ObraFácil — Presupuestos por voz" },
-      { property: "og:description", content: "Habla a tu teléfono. Envía tu presupuesto en PDF por WhatsApp en 30 segundos." },
+      { name: "description", content: "Habla en español y tu cliente recibe el presupuesto y el mensaje en inglés (o en español, tú escoges). Envía tu presupuesto en PDF por WhatsApp en 30 segundos." },
+      { property: "og:title", content: "ObraFácil — Hablas español, tu cliente lo recibe en inglés" },
+      { property: "og:description", content: "Habla a tu teléfono. El presupuesto y el mensaje de WhatsApp salen en inglés o en español, como tú quieras." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -19,6 +18,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   const steps = [
     { icon: Mic, t: "Habla", d: "Di el cliente, el trabajo, materiales y tu mano de obra." },
+    { icon: Languages, t: "Escoge el idioma", d: "Español o inglés para tu cliente. Tú siempre hablas en español." },
     { icon: FileText, t: "La IA arma el presupuesto", d: "Partidas, cantidades y totales en lenguaje profesional." },
     { icon: MessageCircle, t: "Envía por WhatsApp", d: "Tu cliente recibe un PDF con tu nombre al instante." },
     { icon: PenLine, t: "El cliente firma", d: "Aprueba con su dedo desde el teléfono y te avisamos." },
@@ -32,10 +32,13 @@ function Index() {
       </header>
 
       <section className="mx-auto max-w-xl px-5 pb-10 pt-4">
-        <h1 className="font-display text-4xl leading-tight sm:text-5xl">
+        <span className="inline-flex items-center gap-2 rounded-full border border-primary/60 bg-card px-3 py-1 text-xs font-bold text-primary">
+          <Languages className="h-4 w-4" /> Hablas español · tu cliente lo recibe en inglés
+        </span>
+        <h1 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
           Habla a tu teléfono. <span className="text-primary">Envía tu presupuesto</span> por WhatsApp en 30 segundos.
         </h1>
-        <p className="mt-4 text-lg text-muted-foreground">Para contratistas y maestros de obra. Sin escribir, sin Excel, sin complicaciones.</p>
+        <p className="mt-4 text-lg text-muted-foreground">Para contratistas y maestros de obra. Habla en español como siempre — el presupuesto y el mensaje salen en inglés si tu cliente lo necesita.</p>
 
         <div className="mt-8 rounded-2xl border border-border bg-card p-5">
           <div className="flex items-center gap-4">
@@ -50,11 +53,11 @@ function Index() {
           </div>
           <p className="mt-4 text-sm italic text-muted-foreground">"Doña Martha: tumbar pared, poner chirrock y pintura blanca. Materiales $500, mano de obra $900."</p>
           <div className="mt-4 rounded-xl bg-paper p-4 text-paper-foreground">
-            <div className="flex justify-between text-xs font-semibold opacity-60"><span>OF-1001</span><span>Doña Martha</span></div>
-            <p className="mt-2 text-sm font-semibold">Demolición de muro e instalación de Drywall</p>
+            <div className="flex justify-between text-xs font-semibold opacity-60"><span>OF-1001</span><span>Mrs. Martha</span></div>
+            <p className="mt-2 text-sm font-semibold">Wall Demolition and Drywall Installation</p>
             <div className="mt-2 space-y-1 text-sm">
-              <div className="flex justify-between"><span>Materiales (paneles, perfiles, pintura)</span><span>$500</span></div>
-              <div className="flex justify-between"><span>Mano de obra</span><span>$900</span></div>
+              <div className="flex justify-between"><span>Materials (panels, framing, paint)</span><span>$500</span></div>
+              <div className="flex justify-between"><span>Labor</span><span>$900</span></div>
             </div>
             <div className="mt-3 flex justify-between border-t border-paper-foreground/20 pt-2 text-lg font-extrabold"><span>Total</span><span>$1,400</span></div>
           </div>
@@ -62,6 +65,39 @@ function Index() {
 
         <Link to="/grabar" className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-4 text-lg font-extrabold text-primary-foreground"><Mic className="h-6 w-6" /> Crear mi presupuesto por voz</Link>
         <p className="mt-3 text-center text-sm text-muted-foreground">Tus primeros 3 presupuestos son gratis.</p>
+      </section>
+
+      <section className="mx-auto max-w-xl px-5 py-10">
+        <div className="rounded-2xl border-2 border-primary bg-card p-6">
+          <h2 className="font-display text-2xl leading-tight">Habla en español. <span className="text-primary">Tu cliente lo recibe en inglés.</span></h2>
+          <p className="mt-3 text-muted-foreground">Tú dictas como siempre, sin escribir y sin traductores. El presupuesto, el PDF y el mensaje de WhatsApp salen en inglés — o en español. Tú escoges con un toque.</p>
+
+          <div className="mt-6 space-y-3">
+            <div className="rounded-xl border border-primary/50 bg-secondary p-4">
+              <p className="text-xs font-bold uppercase tracking-wide text-primary">🇲🇽 Tú dices</p>
+              <p className="mt-2 text-sm italic">"Doña Martha: tumbar pared, poner chirrock y pintura blanca."</p>
+            </div>
+            <div className="flex justify-center">
+              <ArrowDown className="h-5 w-5 text-primary" />
+            </div>
+            <div className="rounded-xl bg-paper p-4 text-paper-foreground">
+              <p className="text-xs font-bold uppercase tracking-wide">🇺🇸 Tu cliente recibe</p>
+              <p className="mt-2 text-sm font-semibold">Drywall Installation — Mrs. Martha</p>
+              <div className="mt-2 space-y-1 text-sm">
+                <div className="flex justify-between"><span>Materials (panels, framing, paint)</span><span>$500</span></div>
+                <div className="flex justify-between"><span>Labor</span><span>$900</span></div>
+              </div>
+              <div className="mt-3 flex justify-between border-t border-paper-foreground/20 pt-2 text-lg font-extrabold"><span>Total</span><span>$1,400</span></div>
+            </div>
+          </div>
+
+          <div className="mt-5 flex flex-wrap items-center gap-2 text-xs font-bold">
+            <span className="rounded-full border border-border px-3 py-1 text-muted-foreground">🇲🇽 Presupuesto en español</span>
+            <span className="text-muted-foreground">o</span>
+            <span className="rounded-full border border-primary bg-primary/10 px-3 py-1 text-primary">🇺🇸 Quote in English</span>
+          </div>
+          <p className="mt-4 text-sm text-muted-foreground">Ideal cuando tu cliente o el que paga habla inglés. Tú no cambias nada.</p>
+        </div>
       </section>
 
       <section className="mx-auto max-w-xl px-5 py-10">
@@ -82,7 +118,7 @@ function Index() {
           <p className="mt-2 font-display text-4xl">$19.99<span className="text-base font-sans text-muted-foreground">/mes</span></p>
           <p className="text-sm text-muted-foreground">o $179 al año</p>
           <ul className="mt-5 space-y-2">
-            {["Presupuestos ilimitados por voz", "Tu logo en el PDF", "Aviso por WhatsApp cuando el cliente firma", "Soporte VIP"].map((f) => (
+            {["Presupuestos ilimitados por voz", "Presupuesto en español o en inglés", "Tu logo en el PDF", "Aviso por WhatsApp cuando el cliente firma", "Soporte VIP"].map((f) => (
               <li key={f} className="flex items-center gap-2"><Check className="h-5 w-5 text-accent" />{f}</li>
             ))}
           </ul>
