@@ -1,5 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { canCreateQuote } from "@/lib/pricing";
 
 const QuoteSchema = z.object({
   client_name: z.string(),
@@ -24,10 +26,19 @@ Rules:
 Write every output field in {LANG} only (proper names excepted).`;
 
 export const generateEnglishQuote = createServerFn({ method: "POST" })
-  .inputValidator((input) => z.object({ transcript: z.string().min(5).max(4000), language: z.enum(["en", "es"]) }).parse(input))
-  .handler(async ({ data }) => {
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => z.object({ transcript: z.string().min(5).max(4000), language: z.enum(["en", "es"]), environment: z.enum(["sandbox", "live"]) }).parse(input))
+  .handler(async ({ data, context }) => {
     const apiKey = process.env["LOVABLE_API_KEY"];
     if (!apiKey) throw new Error("AI is not configured.");
+    const { supabase, userId } = context;
+    const [{ data: usage }, { data: subscribed }] = await Promise.all([
+      supabase.from("quote_usage").select("free_used, paid_credits").eq("user_id", userId).eq("environment", data.environment).maybeSingle(),
+      supabase.rpc("has_active_subscription", { user_uuid: userId, check_env: data.environment }),
+    ]);
+    if (!canCreateQuote({ subscribed: !!subscribed, freeUsed: usage?.free_used ?? 0, paidCredits: usage?.paid_credits ?? 0 })) {
+      return { ok: false as const, needsPayment: true as const, error: "Ya usaste tus 3 presupuestos gratis. Paga $1 por presupuesto o activa el Plan Maestro." };
+    }
     const { createOpenAI } = await import("@ai-sdk/openai");
     const { streamText, Output, NoObjectGeneratedError } = await import("ai");
 
@@ -64,6 +75,8 @@ export const generateEnglishQuote = createServerFn({ method: "POST" })
     try {
       const quote = await result.output;
       quote.items = quote.items.map((i) => ({ ...i, total: Math.round(i.qty * i.unit_price * 100) / 100 }));
+      const { data: source } = await supabase.rpc("consume_quote", { check_env: data.environment });
+      if (!source || source === "none") return { ok: false as const, needsPayment: true as const, error: "Ya no te quedan presupuestos. Compra más para continuar." };
       return { ok: true as const, quote };
     } catch (e) {
       if (NoObjectGeneratedError.isInstance(e)) return { ok: false as const, error: "No pudimos armar el presupuesto. Intenta describirlo otra vez." };
