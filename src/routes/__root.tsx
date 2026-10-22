@@ -36,10 +36,22 @@ function NotFoundComponent() {
   );
 }
 
+const STALE_RE = /Importing a module script failed|Failed to fetch dynamically imported module|error loading dynamically imported module/i;
+// After an app update, an open tab may request files that no longer exist. Reload once to get fresh ones.
+function reloadOnceForStaleFiles() {
+  if (typeof window === "undefined") return false;
+  const last = Number(sessionStorage.getItem("stale-reload") ?? 0);
+  if (Date.now() - last < 10000) return false;
+  sessionStorage.setItem("stale-reload", String(Date.now()));
+  window.location.reload();
+  return true;
+}
+
 function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
+    if (STALE_RE.test(String((error as Error)?.message ?? error)) && reloadOnceForStaleFiles()) return;
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
@@ -121,6 +133,13 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+  useEffect(() => {
+    const onPreload = (e: Event) => { e.preventDefault(); reloadOnceForStaleFiles(); };
+    const onReject = (e: PromiseRejectionEvent) => { if (STALE_RE.test(String(e.reason?.message ?? e.reason))) reloadOnceForStaleFiles(); };
+    window.addEventListener("vite:preloadError", onPreload);
+    window.addEventListener("unhandledrejection", onReject);
+    return () => { window.removeEventListener("vite:preloadError", onPreload); window.removeEventListener("unhandledrejection", onReject); };
+  }, []);
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
