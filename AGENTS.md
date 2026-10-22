@@ -12,3 +12,5 @@
 - Quote quota is enforced server-side by the `consume_quote` DB function (subscription > free > paid credit) after a quote is generated; never count quotes in the browser.
 - Paid quote credits are granted only by the payments webhook via `add_quote_credits`, keyed by checkout session id so retries never double-grant.
 - Company logos are stored as small data URLs in `business_profiles` because public storage buckets are blocked in this workspace.
+- Quote PDFs are generated from current quote data with pdf-lib in a lazy-loaded browser module; prepare the Blob before clicking to preserve mobile download/share activation.
+- Per-quote company branding is resolved through selectedBrand for preview, PDF and WhatsApp together, so subscriber eligibility and opt-out stay consistent.

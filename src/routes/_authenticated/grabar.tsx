@@ -4,6 +4,10 @@ import { Mic, Square, Loader2, MessageCircle, ArrowLeft, Languages, UserRound, P
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { QuoteEditor } from "@/components/QuoteEditor";
+import { QuotePdfDownload } from "@/components/QuotePdfDownload";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { selectedBrand } from "@/lib/quote-branding";
 import { useAccount } from "@/hooks/use-account";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { canCreateQuote, canUseBranding, freeLeft } from "@/lib/pricing";
@@ -42,10 +46,11 @@ function Recorder() {
   const [quote, setQuote] = useState<Quote | null>(null);
   const [needsPayment, setNeedsPayment] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [includeCompany, setIncludeCompany] = useState(true);
   const { data: acc } = useAccount();
   const qc = useQueryClient();
   const genQuote = useServerFn(generateEnglishQuote);
-  const brand = acc && canUseBranding(acc) && acc.profile?.company_name ? acc.profile : null;
+  const brand = selectedBrand(!!acc && canUseBranding(acc), includeCompany, acc?.profile);
   const recRef = useRef<Awaited<ReturnType<typeof recordWav>> | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -108,7 +113,7 @@ function Recorder() {
 
   const total = quote?.items.reduce((s, i) => s + i.total, 0) ?? 0;
   const fmt = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD" });
-  const sig = brand ? `\n\n— ${[brand.company_name, brand.phone, brand.email].filter(Boolean).join(" · ")}` : "";
+  const sig = brand ? `\n\n— ${[brand.company_name, brand.phone, brand.email, brand.address].filter(Boolean).join(" · ")}` : "";
   const waText = quote ? `${quote.whatsapp_message}\n\n${quote.project_title}\n${quote.items.map((i) => `• ${i.description}: ${fmt(i.total)}`).join("\n")}\nTotal: ${fmt(total)}${sig}` : "";
 
   return (
@@ -177,6 +182,15 @@ function Recorder() {
 
         {quote && (
           <section className="mt-8 space-y-4">
+            {acc?.subscribed ? (
+              <div className="space-y-2 border-b border-border pb-4">
+                <div className="flex items-center justify-between gap-3">
+                  <label htmlFor="include-company" className="text-sm font-semibold">Incluir logo y datos de mi empresa</label>
+                  <Switch id="include-company" checked={includeCompany} onCheckedChange={setIncludeCompany} />
+                </div>
+                <Button asChild variant="link" className="h-auto px-0"><Link to="/cuenta">{acc.profile ? "Editar datos de empresa" : "Agregar nombre, contacto y logo"}</Link></Button>
+              </div>
+            ) : <Button asChild variant="link" className="h-auto whitespace-normal px-0"><Link to="/precios">Agregar tu logo y datos con Plan Maestro</Link></Button>}
             <button onClick={() => setEditing(!editing)}
               className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-primary py-3 font-extrabold text-primary">
               {editing ? <><Check className="h-5 w-5" /> Listo, ver presupuesto</> : <><Pencil className="h-5 w-5" /> Editar o corregir presupuesto</>}
@@ -187,7 +201,7 @@ function Recorder() {
               {brand && (
                 <div className="mb-4 flex items-center gap-3 border-b border-paper-foreground/20 pb-3">
                   {brand.logo_url && <img src={brand.logo_url} alt="" className="h-12 w-12 object-contain" />}
-                  <div className="text-xs">
+                  <div className="min-w-0 break-words text-xs">
                     <p className="text-base font-extrabold">{brand.company_name}</p>
                     <p className="opacity-70">{[brand.phone, brand.email, brand.address].filter(Boolean).join(" · ")}</p>
                   </div>
@@ -210,6 +224,7 @@ function Recorder() {
               <p className="text-xs font-semibold text-muted-foreground">Mensaje para tu cliente ({lang === "en" ? "inglés" : "español"})</p>
               <p className="mt-2 text-sm">{quote.whatsapp_message}</p>
             </div>
+            <QuotePdfDownload quote={quote} language={lang} brand={brand} />
             <a href={`https://wa.me/?text=${encodeURIComponent(waText)}`} target="_blank" rel="noreferrer"
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-4 text-lg font-extrabold text-accent-foreground">
               <MessageCircle className="h-6 w-6" /> Enviar por WhatsApp
