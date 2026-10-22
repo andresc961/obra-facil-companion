@@ -28,7 +28,7 @@ function Index() {
     <main className="min-h-screen bg-background font-sans text-foreground">
       <div className="hazard h-2" />
       <header className="mx-auto flex max-w-xl items-center justify-between px-5 py-4">
-        <img src={logoDark} alt="ObraFácil" width={916} height={329} loading="lazy" className="h-8 w-auto" />
+        <img src={logoDark} alt="ObraFácil" width={949} height={362} className="h-9 w-auto" />
         <span className="rounded-full border border-primary px-3 py-1 text-xs font-semibold text-primary">3 gratis</span>
       </header>
 
