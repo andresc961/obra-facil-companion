@@ -2,7 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Lock, Loader2 } from "lucide-react";
+import { ArrowLeft, Lock, Loader2, ImagePlus, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAccount } from "@/hooks/use-account";
 import { createPortalSession } from "@/lib/payments.functions";
@@ -24,11 +25,15 @@ export const Route = createFileRoute("/_authenticated/cuenta")({
 });
 
 async function shrinkLogo(file: File): Promise<string> {
+  if (!file.type.startsWith("image/") || file.size > 10 * 1024 * 1024) throw new Error("Elige una imagen de hasta 10 MB.");
   const img = await createImageBitmap(file);
   const scale = Math.min(1, 300 / Math.max(img.width, img.height));
   const c = document.createElement("canvas");
   c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
-  c.getContext("2d")!.drawImage(img, 0, 0, c.width, c.height);
+  const ctx = c.getContext("2d");
+  if (!ctx) throw new Error("No pudimos cargar el logo.");
+  ctx.drawImage(img, 0, 0, c.width, c.height);
+  img.close();
   return c.toDataURL("image/png");
 }
 
@@ -51,12 +56,16 @@ function Account() {
   const branding = acc ? canUseBranding(acc) : false;
 
   const save = async () => {
+    if (!branding) return;
     setSaving(true); setMsg(null);
-    const { data: u } = await supabase.auth.getUser();
-    const { error } = await supabase.from("business_profiles").upsert({ user_id: u.user!.id, ...form, updated_at: new Date().toISOString() });
-    setMsg(error ? "No se pudo guardar." : "¡Guardado!");
-    await qc.invalidateQueries({ queryKey: ["account"] });
-    setSaving(false);
+    try {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) { setMsg("Inicia sesión para guardar."); return; }
+      const { error } = await supabase.from("business_profiles").upsert({ user_id: u.user.id, ...form, updated_at: new Date().toISOString() });
+      setMsg(error ? "No se pudo guardar." : "¡Guardado!");
+      if (!error) await qc.invalidateQueries({ queryKey: ["account"] });
+    } catch { setMsg("No se pudo guardar. Intenta de nuevo."); }
+    finally { setSaving(false); }
   };
 
   const signOut = async () => {
@@ -72,7 +81,7 @@ function Account() {
   };
 
   const field = (k: keyof typeof form, label: string, type = "text") => (
-    <input type={type} disabled={!branding} value={form[k]} onChange={(e) => setForm({ ...form, [k]: e.target.value })} placeholder={label}
+    <input type={type} aria-label={label} disabled={!branding} value={form[k]} onChange={(e) => setForm({ ...form, [k]: e.target.value })} placeholder={label}
       className="w-full rounded-xl border border-border bg-background p-3 outline-none focus:border-primary disabled:opacity-50" />
   );
 
@@ -106,7 +115,6 @@ function Account() {
 
         <section className="mt-6 rounded-2xl bg-card p-5">
           <p className="font-extrabold">Datos de tu empresa</p>
-          <p className="text-sm text-muted-foreground">Salen en cada presupuesto y mensaje a tu cliente.</p>
           {!branding && (
             <div className="mt-3 flex items-start gap-2 rounded-xl border border-primary p-3 text-sm">
               <Lock className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
@@ -116,20 +124,26 @@ function Account() {
           <div className="mt-4 space-y-3">
             <div className="flex items-center gap-3">
               {form.logo_url ? <img src={form.logo_url} alt="Logo" className="h-16 w-16 rounded-lg bg-paper object-contain" /> : <div className="h-16 w-16 rounded-lg border border-dashed border-border" />}
-              <label className={`rounded-lg border border-border px-3 py-2 text-sm ${branding ? "cursor-pointer" : "opacity-50"}`}>
-                Subir logo
-                <input type="file" accept="image/*" hidden disabled={!branding}
-                  onChange={async (e) => { const f = e.target.files?.[0]; if (f) setForm({ ...form, logo_url: await shrinkLogo(f) }); }} />
-              </label>
+              <Button asChild variant="outline" disabled={!branding}><label className={branding ? "cursor-pointer" : "pointer-events-none opacity-50"}>
+                <ImagePlus /> Subir logo
+                <input type="file" aria-label="Subir logo" accept="image/*" hidden disabled={!branding}
+                  onChange={async (e) => {
+                    const f = e.target.files?.[0];
+                    if (!f || !branding) return;
+                    try { const logo_url = await shrinkLogo(f); setForm((previous) => ({ ...previous, logo_url })); setMsg(null); }
+                    catch (error) { setMsg(error instanceof Error ? error.message : "No pudimos cargar el logo."); }
+                  }} />
+              </label></Button>
+              {form.logo_url && <Button variant="ghost" size="icon" title="Quitar logo" aria-label="Quitar logo" disabled={!branding} onClick={() => setForm({ ...form, logo_url: "" })}><Trash2 /></Button>}
             </div>
             {field("company_name", "Nombre de tu empresa")}
             {field("phone", "Teléfono", "tel")}
             {field("email", "Correo de contacto", "email")}
             {field("address", "Dirección o ciudad")}
-            <button onClick={save} disabled={!branding || saving} className="w-full rounded-xl bg-primary py-3 font-extrabold text-primary-foreground disabled:opacity-50">
+            <Button onClick={save} disabled={!branding || saving} className="h-12 w-full font-extrabold">
               {saving ? "Guardando…" : "Guardar"}
-            </button>
-            {msg && <p className="text-sm text-muted-foreground">{msg}</p>}
+            </Button>
+            {msg && <p role="status" className="text-sm text-muted-foreground">{msg}</p>}
           </div>
         </section>
 
