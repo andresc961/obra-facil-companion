@@ -74,6 +74,7 @@ export type Database = {
           free_used: number
           paid_credits: number
           total_quotes: number
+          trial_ends_at: string | null
           updated_at: string | null
           user_id: string
         }
@@ -82,6 +83,7 @@ export type Database = {
           free_used?: number
           paid_credits?: number
           total_quotes?: number
+          trial_ends_at?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -90,6 +92,7 @@ export type Database = {
           free_used?: number
           paid_credits?: number
           total_quotes?: number
+          trial_ends_at?: string | null
           updated_at?: string | null
           user_id?: string
         }

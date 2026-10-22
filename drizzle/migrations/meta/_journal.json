@@ -8,6 +8,13 @@
       "when": 1792686554851,
       "tag": "0000_monetization",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792707939009,
+      "tag": "0001_free_month_trial",
+      "breakpoints": true
     }
   ]
 }
