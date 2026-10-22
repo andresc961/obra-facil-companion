@@ -6,10 +6,10 @@ import { generateEnglishQuote, type Quote } from "@/lib/quote.functions";
 export const Route = createFileRoute("/grabar")({
   head: () => ({
     meta: [
-      { title: "Grabadora ObraFácil — Habla en español, cotiza en inglés" },
-      { name: "description", content: "Dicta tu presupuesto en español y ObraFácil lo convierte en una cotización profesional en inglés." },
+      { title: "Grabadora ObraFácil — Habla en español, cotiza en español o inglés" },
+      { name: "description", content: "Dicta tu presupuesto en español y ObraFácil lo convierte en una cotización profesional en español o inglés." },
       { property: "og:title", content: "Grabadora ObraFácil" },
-      { property: "og:description", content: "Habla en español. Tu cliente recibe el presupuesto en inglés." },
+      { property: "og:description", content: "Habla en español. Cotiza en español o inglés." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -27,6 +27,7 @@ type SR = { lang: string; continuous: boolean; interimResults: boolean; start():
 
 function Recorder() {
   const [text, setText] = useState("");
+  const [lang, setLang] = useState<"en" | "es">("es");
   const [listening, setListening] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,7 +55,7 @@ function Recorder() {
   const generate = async () => {
     setLoading(true); setError(null); setQuote(null);
     try {
-      const r = await generateEnglishQuote({ data: { transcript: text } });
+      const r = await generateEnglishQuote({ data: { transcript: text, language: lang } });
       if (r.ok) setQuote(r.quote); else setError(r.error);
     } catch { setError("Error de conexión. Intenta de nuevo."); }
     setLoading(false);
@@ -74,7 +75,13 @@ function Recorder() {
 
         <div className="flex items-start gap-3 rounded-xl bg-primary p-4 text-primary-foreground">
           <Languages className="mt-0.5 h-6 w-6 shrink-0" />
-          <p className="font-semibold">Habla en español. Tu cliente recibe el presupuesto y el mensaje en <b>inglés</b>.</p>
+          <p className="font-semibold">Habla en español. Elige en qué idioma recibe tu cliente el presupuesto y el mensaje.</p>
+        </div>
+        <div className="mt-3 grid grid-cols-2 gap-2 rounded-xl bg-card p-1" role="radiogroup" aria-label="Idioma del cliente">
+          {([["es", "🇲🇽 Español"], ["en", "🇺🇸 English"]] as const).map(([v, l]) => (
+            <button key={v} role="radio" aria-checked={lang === v} onClick={() => { setLang(v); setQuote(null); }}
+              className={`rounded-lg py-3 font-extrabold ${lang === v ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>{l}</button>
+          ))}
         </div>
         <p className="mt-3 text-sm text-muted-foreground">Di el nombre del cliente, el trabajo a realizar, los materiales y el precio de tu mano de obra.</p>
 
@@ -98,14 +105,14 @@ function Recorder() {
 
         <button onClick={generate} disabled={loading || text.trim().length < 5}
           className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 text-lg font-extrabold text-primary-foreground disabled:opacity-50">
-          {loading ? <><Loader2 className="h-5 w-5 animate-spin" /> Traduciendo y calculando…</> : "Crear presupuesto en inglés"}
+          {loading ? <><Loader2 className="h-5 w-5 animate-spin" /> Traduciendo y calculando…</> : lang === "en" ? "Crear presupuesto en inglés" : "Crear presupuesto en español"}
         </button>
         {error && <p className="mt-3 rounded-lg bg-destructive p-3 text-sm text-destructive-foreground">{error}</p>}
 
         {quote && (
           <section className="mt-8 space-y-4">
             <div className="rounded-xl bg-paper p-5 text-paper-foreground">
-              <p className="text-xs font-semibold uppercase opacity-60">Estimate for {quote.client_name}</p>
+              <p className="text-xs font-semibold uppercase opacity-60">{lang === "en" ? "Estimate for" : "Presupuesto para"} {quote.client_name}</p>
               <h2 className="mt-1 text-lg font-extrabold">{quote.project_title}</h2>
               <div className="mt-4 space-y-2 text-sm">
                 {quote.items.map((i, k) => (
@@ -119,7 +126,7 @@ function Recorder() {
               {quote.notes && <p className="mt-3 text-xs opacity-70">{quote.notes}</p>}
             </div>
             <div className="rounded-xl border border-border bg-card p-4">
-              <p className="text-xs font-semibold text-muted-foreground">Mensaje para tu cliente (inglés)</p>
+              <p className="text-xs font-semibold text-muted-foreground">Mensaje para tu cliente ({lang === "en" ? "inglés" : "español"})</p>
               <p className="mt-2 text-sm">{quote.whatsapp_message}</p>
             </div>
             <a href={`https://wa.me/?text=${encodeURIComponent(waText)}`} target="_blank" rel="noreferrer"
