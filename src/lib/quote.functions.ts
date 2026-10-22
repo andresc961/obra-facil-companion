@@ -36,8 +36,8 @@ export const generateEnglishQuote = createServerFn({ method: "POST" })
       supabase.from("quote_usage").select("free_used, paid_credits").eq("user_id", userId).eq("environment", data.environment).maybeSingle(),
       supabase.rpc("has_active_subscription", { user_uuid: userId, check_env: data.environment }),
     ]);
-    if (!canCreateQuote({ subscribed: !!subscribed, freeUsed: usage?.free_used ?? 0, paidCredits: usage?.paid_credits ?? 0 })) {
-      return { ok: false as const, needsPayment: true as const, error: "Ya usaste tus 3 presupuestos gratis. Paga $1 por presupuesto o activa el Plan Maestro." };
+    if (!canCreateQuote({ subscribed: !!subscribed, freeUsed: usage?.free_used ?? 0, paidCredits: usage?.paid_credits ?? 0, trialEndsAt: usage?.trial_ends_at ?? null })) {
+      return { ok: false as const, needsPayment: true as const, error: "Ya terminó tu mes gratis. Paga $1 por presupuesto o activa el Plan Maestro." };
     }
     const { createOpenAI } = await import("@ai-sdk/openai");
     const { streamText, Output, NoObjectGeneratedError } = await import("ai");

@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAccount } from "@/hooks/use-account";
 import { createPortalSession } from "@/lib/payments.functions";
 import { getStripeEnvironment } from "@/lib/stripe";
-import { canUseBranding, freeLeft } from "@/lib/pricing";
+import { canUseBranding, freeMonthEnds, inFreeMonth } from "@/lib/pricing";
 
 export const Route = createFileRoute("/_authenticated/cuenta")({
   staticData: { sitemap: false },
@@ -113,7 +113,8 @@ function Account() {
               </>
             ) : (
               <>
-                <p className="mt-1 text-xl font-extrabold">{freeLeft(acc)} gratis · {acc.paidCredits} pagados</p>
+                <p className="mt-1 text-xl font-extrabold">{inFreeMonth(acc) ? `🎁 Mes gratis · termina el ${freeMonthEnds(acc)}` : "Sin plan"}</p>
+                {acc.paidCredits > 0 && <p className="text-sm text-muted-foreground">{acc.paidCredits} presupuesto{acc.paidCredits > 1 ? "s" : ""} pagados.</p>}
                 <Link to="/precios" className="mt-3 inline-block rounded-xl bg-primary px-4 py-3 font-extrabold text-primary-foreground">Comprar o activar Plan Maestro</Link>
               </>
             )
