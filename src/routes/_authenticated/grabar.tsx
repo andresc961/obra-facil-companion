@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Mic, Square, Loader2, MessageCircle, ArrowLeft, Languages, UserRound } from "lucide-react";
+import { Mic, Square, Loader2, MessageCircle, ArrowLeft, Languages, UserRound, Pencil, Check } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { QuoteEditor } from "@/components/QuoteEditor";
 import { useAccount } from "@/hooks/use-account";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { canCreateQuote, canUseBranding, freeLeft } from "@/lib/pricing";
@@ -39,6 +40,7 @@ function Recorder() {
   const [error, setError] = useState<string | null>(null);
   const [quote, setQuote] = useState<Quote | null>(null);
   const [needsPayment, setNeedsPayment] = useState(false);
+  const [editing, setEditing] = useState(false);
   const { data: acc } = useAccount();
   const qc = useQueryClient();
   const genQuote = useServerFn(generateEnglishQuote);
@@ -53,7 +55,7 @@ function Recorder() {
     setLoading(true); setError(null); setQuote(null); setNeedsPayment(false);
     try {
       const r = await genQuote({ data: { transcript, language: lang, environment: getStripeEnvironment() } });
-      if (r.ok) setQuote(r.quote);
+      if (r.ok) { setQuote(r.quote); setEditing(false); }
       else if ("needsPayment" in r) setNeedsPayment(true);
       else setError(r.error);
       void qc.invalidateQueries({ queryKey: ["account"] });
@@ -173,6 +175,12 @@ function Recorder() {
 
         {quote && (
           <section className="mt-8 space-y-4">
+            <button onClick={() => setEditing(!editing)}
+              className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-primary py-3 font-extrabold text-primary">
+              {editing ? <><Check className="h-5 w-5" /> Listo, ver presupuesto</> : <><Pencil className="h-5 w-5" /> Editar o corregir presupuesto</>}
+            </button>
+            {editing && <div className="rounded-xl bg-paper p-4"><QuoteEditor quote={quote} onChange={setQuote} en={lang === "en"} /></div>}
+            {!editing && <>
             <div className="rounded-xl bg-paper p-5 text-paper-foreground">
               {brand && (
                 <div className="mb-4 flex items-center gap-3 border-b border-paper-foreground/20 pb-3">
@@ -204,6 +212,7 @@ function Recorder() {
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-4 text-lg font-extrabold text-accent-foreground">
               <MessageCircle className="h-6 w-6" /> Enviar por WhatsApp
             </a>
+            </>}
           </section>
         )}
       </div>
