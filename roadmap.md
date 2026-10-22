@@ -1,3 +1,3 @@
-- [ ] Add downloadable PDFs using the latest edited quote and selected client language.
-- [ ] Make monthly-plan company branding optional on each quote and improve logo/contact settings.
+- [x] Add downloadable PDFs using the latest edited quote and selected client language.
+- [x] Make monthly-plan company branding optional on each quote and improve logo/contact settings.
 - [ ] Verify subscriber branding, PDF downloads, and export tests.
