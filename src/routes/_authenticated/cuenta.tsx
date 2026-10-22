@@ -45,6 +45,7 @@ function Account() {
   const [form, setForm] = useState({ company_name: "", phone: "", email: "", address: "", logo_url: "" });
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [portalMsg, setPortalMsg] = useState<string | null>(null);
 
   useEffect(() => {
     if (acc?.profile) setForm({
@@ -75,9 +76,14 @@ function Account() {
   };
 
   const manage = async () => {
-    const r = await portal({ data: { environment: getStripeEnvironment(), returnUrl: window.location.href } });
-    if ("error" in r) return setMsg(r.error);
-    window.open(r.url, "_blank");
+    setPortalMsg(null);
+    // Open the tab during the tap so phones don't block it, then point it at the portal.
+    const tab = window.open("", "_blank");
+    try {
+      const r = await portal({ data: { environment: getStripeEnvironment(), returnUrl: window.location.href } });
+      if ("error" in r) { tab?.close(); return setPortalMsg(r.error); }
+      if (tab) tab.location.href = r.url; else window.location.href = r.url;
+    } catch { tab?.close(); setPortalMsg("No pudimos abrir la página de tu suscripción. Intenta de nuevo."); }
   };
 
   const field = (k: keyof typeof form, label: string, type = "text") => (
@@ -103,6 +109,7 @@ function Account() {
                   <p className="text-sm text-muted-foreground">Termina el {new Date(acc.subscription.current_period_end).toLocaleDateString("es")}</p>
                 )}
                 <button onClick={manage} className="mt-3 text-sm text-primary underline">Administrar o cancelar suscripción</button>
+                {portalMsg && <p role="alert" className="mt-2 text-sm text-muted-foreground">{portalMsg}</p>}
               </>
             ) : (
               <>

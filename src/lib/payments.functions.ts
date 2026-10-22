@@ -84,6 +84,7 @@ export const createPortalSession = createServerFn({ method: "POST" })
       .eq("user_id", context.userId).eq("environment", data.environment)
       .order("created_at", { ascending: false }).limit(1).maybeSingle();
     if (!sub?.stripe_customer_id) return { error: "No tienes una suscripción." };
+    if (!sub.stripe_customer_id.startsWith("cus_")) return { error: "Este Plan Maestro es un acceso de prueba gratis, sin cobro. No hay nada que administrar ni cancelar: termina solo en la fecha indicada." };
     try {
       const stripe = createStripeClient(data.environment);
       const portal = await stripe.billingPortal.sessions.create({
