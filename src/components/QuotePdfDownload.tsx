@@ -23,7 +23,7 @@ export function QuotePdfDownload({ quote, language, brand, message }: { quote: Q
     <button disabled={disabled}
       onClick={() => { if (current) void sendPdfWithMessage(current.blob, current.filename, message).catch(() => setError("No pudimos enviar. Intenta de nuevo.")); }}
       className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-4 text-lg font-extrabold text-accent-foreground disabled:opacity-60">
-      {current ? <MessageCircle className="h-6 w-6" /> : <Loader2 className="h-6 w-6 animate-spin" />} {current ? "Enviar PDF y mensaje por WhatsApp" : "Preparando PDF…"}
+      {current ? <MessageCircle className="h-6 w-6" /> : <Loader2 className="h-6 w-6 animate-spin" />} {current ? "Enviar PDF y mensaje" : "Preparando PDF…"}
     </button>
     <Button variant="outline" className="h-12 w-full text-base font-bold" disabled={disabled}
       onClick={() => { if (current) void deliverFile(current.blob, current.filename).catch(() => setError("No pudimos descargar el archivo. Intenta de nuevo.")); }}>
