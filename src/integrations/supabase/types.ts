@@ -14,13 +14,149 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      business_profiles: {
+        Row: {
+          address: string | null
+          company_name: string | null
+          email: string | null
+          logo_url: string | null
+          phone: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          company_name?: string | null
+          email?: string | null
+          logo_url?: string | null
+          phone?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          company_name?: string | null
+          email?: string | null
+          logo_url?: string | null
+          phone?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      credit_purchases: {
+        Row: {
+          checkout_session_id: string
+          created_at: string | null
+          environment: string
+          quantity: number
+          user_id: string
+        }
+        Insert: {
+          checkout_session_id: string
+          created_at?: string | null
+          environment: string
+          quantity: number
+          user_id: string
+        }
+        Update: {
+          checkout_session_id?: string
+          created_at?: string | null
+          environment?: string
+          quantity?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      quote_usage: {
+        Row: {
+          environment: string
+          free_used: number
+          paid_credits: number
+          total_quotes: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          environment?: string
+          free_used?: number
+          paid_credits?: number
+          total_quotes?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          environment?: string
+          free_used?: number
+          paid_credits?: number
+          total_quotes?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean | null
+          created_at: string | null
+          current_period_end: string | null
+          current_period_start: string | null
+          environment: string
+          id: string
+          price_id: string
+          product_id: string
+          status: string
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean | null
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          environment?: string
+          id?: string
+          price_id: string
+          product_id: string
+          status?: string
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean | null
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          environment?: string
+          id?: string
+          price_id?: string
+          product_id?: string
+          status?: string
+          stripe_customer_id?: string
+          stripe_subscription_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      add_quote_credits: {
+        Args: { _env: string; _qty: number; _session: string; _user: string }
+        Returns: undefined
+      }
+      consume_quote: { Args: { check_env: string }; Returns: string }
+      has_active_subscription: {
+        Args: { check_env?: string; user_uuid: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

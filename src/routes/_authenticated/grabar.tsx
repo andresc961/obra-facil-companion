@@ -1,10 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Mic, Square, Loader2, MessageCircle, ArrowLeft, Languages } from "lucide-react";
+import { Mic, Square, Loader2, MessageCircle, ArrowLeft, Languages, UserRound } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { useAccount } from "@/hooks/use-account";
+import { getStripeEnvironment } from "@/lib/stripe";
+import { canCreateQuote, canUseBranding, freeLeft } from "@/lib/pricing";
 import { generateEnglishQuote, type Quote } from "@/lib/quote.functions";
 import { recordWav } from "@/lib/record-wav";
 
-export const Route = createFileRoute("/grabar")({
+export const Route = createFileRoute("/_authenticated/grabar")({
   head: () => ({
     meta: [
       { title: "Grabadora ObraFácil — Habla en español, cotiza en español o inglés" },
@@ -33,16 +38,25 @@ function Recorder() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [quote, setQuote] = useState<Quote | null>(null);
+  const [needsPayment, setNeedsPayment] = useState(false);
+  const { data: acc } = useAccount();
+  const qc = useQueryClient();
+  const genQuote = useServerFn(generateEnglishQuote);
+  const brand = acc && canUseBranding(acc) && acc.profile?.company_name ? acc.profile : null;
   const recRef = useRef<Awaited<ReturnType<typeof recordWav>> | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => () => { recRef.current?.cancel(); if (timerRef.current) clearInterval(timerRef.current); }, []);
 
   const generate = async (transcript = text) => {
-    setLoading(true); setError(null); setQuote(null);
+    if (acc && !canCreateQuote(acc)) { setNeedsPayment(true); return; }
+    setLoading(true); setError(null); setQuote(null); setNeedsPayment(false);
     try {
-      const r = await generateEnglishQuote({ data: { transcript, language: lang } });
-      if (r.ok) setQuote(r.quote); else setError(r.error);
+      const r = await genQuote({ data: { transcript, language: lang, environment: getStripeEnvironment() } });
+      if (r.ok) setQuote(r.quote);
+      else if ("needsPayment" in r) setNeedsPayment(true);
+      else setError(r.error);
+      void qc.invalidateQueries({ queryKey: ["account"] });
     } catch { setError("Error de conexión. Intenta de nuevo."); }
     setLoading(false);
   };
@@ -91,15 +105,22 @@ function Recorder() {
 
   const total = quote?.items.reduce((s, i) => s + i.total, 0) ?? 0;
   const fmt = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD" });
-  const waText = quote ? `${quote.whatsapp_message}\n\n${quote.project_title}\n${quote.items.map((i) => `• ${i.description}: ${fmt(i.total)}`).join("\n")}\nTotal: ${fmt(total)}` : "";
+  const sig = brand ? `\n\n— ${[brand.company_name, brand.phone, brand.email].filter(Boolean).join(" · ")}` : "";
+  const waText = quote ? `${quote.whatsapp_message}\n\n${quote.project_title}\n${quote.items.map((i) => `• ${i.description}: ${fmt(i.total)}`).join("\n")}\nTotal: ${fmt(total)}${sig}` : "";
 
   return (
     <main className="min-h-screen bg-background px-5 pb-16 font-sans text-foreground">
       <div className="mx-auto max-w-xl">
         <header className="flex items-center gap-3 py-4">
           <Link to="/" className="rounded-lg bg-card p-2"><ArrowLeft className="h-5 w-5" /></Link>
-          <span className="font-display text-xl">Grabadora <span className="text-primary">ObraFácil</span></span>
+          <span className="flex-1 font-display text-xl">Grabadora <span className="text-primary">ObraFácil</span></span>
+          <Link to="/cuenta" aria-label="Mi cuenta" className="rounded-lg bg-card p-2"><UserRound className="h-5 w-5" /></Link>
         </header>
+        {acc && (
+          <Link to={acc.subscribed ? "/cuenta" : "/precios"} className="mb-3 block rounded-xl border border-border bg-card px-4 py-2 text-sm">
+            {acc.subscribed ? "⭐ Plan Maestro · ilimitado" : <>Te quedan <b>{freeLeft(acc)} gratis</b>{acc.paidCredits > 0 && <> y <b>{acc.paidCredits} pagados</b></>} · <span className="text-primary underline">Ver planes</span></>}
+          </Link>
+        )}
 
         <div className="flex items-start gap-3 rounded-xl bg-primary p-4 text-primary-foreground">
           <Languages className="mt-0.5 h-6 w-6 shrink-0" />
@@ -141,11 +162,27 @@ function Recorder() {
           className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 text-lg font-extrabold text-primary-foreground disabled:opacity-50">
           {loading ? <><Loader2 className="h-5 w-5 animate-spin" /> Armando presupuesto…</> : quote ? "Volver a generar" : lang === "en" ? "Crear presupuesto en inglés" : "Crear presupuesto en español"}
         </button>
+        {needsPayment && (
+          <div className="mt-4 rounded-2xl border-2 border-primary bg-card p-5">
+            <p className="font-display text-xl">Ya usaste tus 3 presupuestos gratis</p>
+            <p className="mt-1 text-sm text-muted-foreground">Paga $1 por presupuesto, o $10 al mes para presupuestos ilimitados con tu logo y datos de empresa.</p>
+            <Link to="/precios" className="mt-4 block rounded-xl bg-primary py-3 text-center font-extrabold text-primary-foreground">Ver opciones</Link>
+          </div>
+        )}
         {error && <p className="mt-3 rounded-lg bg-destructive p-3 text-sm text-destructive-foreground">{error}</p>}
 
         {quote && (
           <section className="mt-8 space-y-4">
             <div className="rounded-xl bg-paper p-5 text-paper-foreground">
+              {brand && (
+                <div className="mb-4 flex items-center gap-3 border-b border-paper-foreground/20 pb-3">
+                  {brand.logo_url && <img src={brand.logo_url} alt="" className="h-12 w-12 object-contain" />}
+                  <div className="text-xs">
+                    <p className="text-base font-extrabold">{brand.company_name}</p>
+                    <p className="opacity-70">{[brand.phone, brand.email, brand.address].filter(Boolean).join(" · ")}</p>
+                  </div>
+                </div>
+              )}
               <p className="text-xs font-semibold uppercase opacity-60">{lang === "en" ? "Estimate for" : "Presupuesto para"} {quote.client_name}</p>
               <h2 className="mt-1 text-lg font-extrabold">{quote.project_title}</h2>
               <div className="mt-4 space-y-2 text-sm">

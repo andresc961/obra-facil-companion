@@ -113,15 +113,22 @@ function Index() {
       </section>
 
       <section className="mx-auto max-w-xl px-5 py-10">
-        <div className="rounded-2xl border-2 border-primary bg-card p-6">
-          <p className="text-sm font-semibold text-primary">⭐ Plan Maestro</p>
-          <p className="mt-2 font-display text-4xl">$19.99<span className="text-base font-sans text-muted-foreground">/mes</span></p>
-          <p className="text-sm text-muted-foreground">o $179 al año</p>
-          <ul className="mt-5 space-y-2">
-            {["Presupuestos ilimitados por voz", "Presupuesto en español o en inglés", "Tu logo en el PDF", "Aviso por WhatsApp cuando el cliente firma", "Soporte VIP"].map((f) => (
-              <li key={f} className="flex items-center gap-2"><Check className="h-5 w-5 text-accent" />{f}</li>
-            ))}
-          </ul>
+        <h2 className="font-display text-2xl">Precios simples</h2>
+        <p className="mt-2 text-muted-foreground">Tus primeros 3 presupuestos son gratis. Después tú escoges:</p>
+        <div className="mt-6 space-y-4">
+          <div className="rounded-2xl border border-border bg-card p-6">
+            <p className="text-sm font-semibold text-muted-foreground">Paga solo lo que uses</p>
+            <p className="mt-2 font-display text-4xl">$1<span className="font-sans text-base text-muted-foreground">/presupuesto</span></p>
+          </div>
+          <div className="rounded-2xl border-2 border-primary bg-card p-6">
+            <p className="text-sm font-semibold text-primary">⭐ Plan Maestro</p>
+            <p className="mt-2 font-display text-4xl">$10<span className="font-sans text-base text-muted-foreground">/mes</span></p>
+            <ul className="mt-5 space-y-2">
+              {["Presupuestos ilimitados por voz", "Presupuesto en español o en inglés", "El nombre, logo y contacto de tu empresa", "Cancela cuando quieras"].map((f) => (
+                <li key={f} className="flex items-center gap-2"><Check className="h-5 w-5 text-accent" />{f}</li>
+              ))}
+            </ul>
+          </div>
         </div>
       </section>
 
