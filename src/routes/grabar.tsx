@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Mic, Square, Loader2, MessageCircle, ArrowLeft, Languages } from "lucide-react";
 import { generateEnglishQuote, type Quote } from "@/lib/quote.functions";
+import { recordWav } from "@/lib/record-wav";
 
 export const Route = createFileRoute("/grabar")({
   head: () => ({
@@ -23,43 +24,70 @@ const PRESETS = [
   "Don Antonio: reemplazo de láminas de zinc en techo, 20 láminas a $35 cada una, mano de obra $600.",
 ];
 
-type SR = { lang: string; continuous: boolean; interimResults: boolean; start(): void; stop(): void; onresult: (e: { results: ArrayLike<{ 0: { transcript: string } }> }) => void; onend: () => void; onerror: () => void };
-
 function Recorder() {
   const [text, setText] = useState("");
   const [lang, setLang] = useState<"en" | "es">("es");
   const [listening, setListening] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
+  const [seconds, setSeconds] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [quote, setQuote] = useState<Quote | null>(null);
-  const recRef = useRef<SR | null>(null);
+  const recRef = useRef<Awaited<ReturnType<typeof recordWav>> | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const toggleMic = () => {
-    if (listening) return recRef.current?.stop();
-    const W = window as unknown as { SpeechRecognition?: new () => SR; webkitSpeechRecognition?: new () => SR };
-    const Ctor = W.SpeechRecognition ?? W.webkitSpeechRecognition;
-    if (!Ctor) return setError("Tu navegador no permite dictado. Escribe o usa un ejemplo.");
-    const rec = new Ctor();
-    rec.lang = "es-US";
-    rec.continuous = true;
-    rec.interimResults = true;
-    rec.onresult = (e) => setText(Array.from(e.results).map((r) => r[0].transcript).join(" "));
-    rec.onend = () => setListening(false);
-    rec.onerror = () => setListening(false);
-    recRef.current = rec;
-    setError(null);
-    rec.start();
-    setListening(true);
-  };
+  useEffect(() => () => { recRef.current?.cancel(); if (timerRef.current) clearInterval(timerRef.current); }, []);
 
-  const generate = async () => {
+  const generate = async (transcript = text) => {
     setLoading(true); setError(null); setQuote(null);
     try {
-      const r = await generateEnglishQuote({ data: { transcript: text, language: lang } });
+      const r = await generateEnglishQuote({ data: { transcript, language: lang } });
       if (r.ok) setQuote(r.quote); else setError(r.error);
     } catch { setError("Error de conexión. Intenta de nuevo."); }
     setLoading(false);
   };
+
+  const toggleMic = async () => {
+    if (transcribing || loading) return;
+    if (listening) {
+      const rec = recRef.current; recRef.current = null;
+      setListening(false);
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (!rec) return;
+      setTranscribing(true);
+      try {
+        const file = await rec.stop();
+        const form = new FormData();
+        form.append("file", file);
+        const res = await fetch("/api/transcribe", { method: "POST", body: form });
+        const j = (await res.json().catch(() => ({}))) as { text?: string; error?: string };
+        if (!res.ok || !j.text) { setError(j.error ?? "No escuchamos nada. Intenta otra vez."); return; }
+        const t = text.trim() ? `${text.trim()} ${j.text}` : j.text;
+        setText(t);
+        setTranscribing(false);
+        if (t.trim().length >= 5) await generate(t);
+      } catch (e) {
+        setError((e as Error).message === "empty" ? "La grabación salió vacía. Mantén presionado y habla más tiempo." : "No pudimos procesar el audio. Intenta otra vez.");
+      } finally { setTranscribing(false); }
+      return;
+    }
+    if (!navigator.mediaDevices?.getUserMedia) return setError("Tu navegador no permite usar el micrófono. Escribe o usa un ejemplo.");
+    setError(null);
+    try {
+      recRef.current = await recordWav();
+      setSeconds(0);
+      timerRef.current = setInterval(() => setSeconds((s) => {
+        if (s + 1 >= 180) void toggleMicRef.current();
+        return s + 1;
+      }), 1000);
+      setListening(true);
+    } catch {
+      setError("Necesitamos permiso para usar el micrófono. Actívalo en la configuración del navegador.");
+    }
+  };
+  const toggleMicRef = useRef(toggleMic);
+  toggleMicRef.current = toggleMic;
+  const busy = transcribing || loading;
 
   const total = quote?.items.reduce((s, i) => s + i.total, 0) ?? 0;
   const fmt = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD" });
