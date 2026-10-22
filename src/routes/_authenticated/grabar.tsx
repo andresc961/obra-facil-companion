@@ -122,7 +122,7 @@ function Recorder() {
         <header className="flex items-center gap-3 py-4">
           <Link to="/" className="rounded-lg bg-card p-2"><ArrowLeft className="h-5 w-5" /></Link>
           <img src={logoIcon} alt="" aria-hidden="true" width={256} height={256} loading="lazy" className="h-7 w-7" />
-          <span className="flex-1 font-display text-xl">Grabadora <span className="text-primary">ObraFácil</span></span>
+          <span className="flex-1 font-display text-xl"><span className="text-primary">ObraFácil</span></span>
           <Link to="/cuenta" aria-label="Mi cuenta" className="rounded-lg bg-card p-2"><UserRound className="h-5 w-5" /></Link>
         </header>
         {acc && (
