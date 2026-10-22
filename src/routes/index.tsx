@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Mic, FileText, MessageCircle, PenLine, Check } from "lucide-react";
 
 // TODO: replace with the real WhatsApp Business number (digits only, with country code)
@@ -72,7 +72,8 @@ function Index() {
           </div>
         </div>
 
-        <div className="mt-8"><WhatsAppCta label="Pruébalo gratis por WhatsApp" /></div>
+        <Link to="/grabar" className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-4 text-lg font-extrabold text-primary-foreground"><Mic className="h-6 w-6" /> Probar: habla en español, cotiza en inglés</Link>
+        <div className="mt-3"><WhatsAppCta label="Pruébalo gratis por WhatsApp" /></div>
         <p className="mt-3 text-center text-sm text-muted-foreground">Tus primeros 3 presupuestos son gratis.</p>
       </section>
 
