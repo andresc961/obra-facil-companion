@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Mic, Square, Loader2, MessageCircle, ArrowLeft, Languages } from "lucide-react";
 import { generateEnglishQuote, type Quote } from "@/lib/quote.functions";
+import { recordWav } from "@/lib/record-wav";
 
 export const Route = createFileRoute("/grabar")({
   head: () => ({
@@ -23,43 +24,70 @@ const PRESETS = [
   "Don Antonio: reemplazo de láminas de zinc en techo, 20 láminas a $35 cada una, mano de obra $600.",
 ];
 
-type SR = { lang: string; continuous: boolean; interimResults: boolean; start(): void; stop(): void; onresult: (e: { results: ArrayLike<{ 0: { transcript: string } }> }) => void; onend: () => void; onerror: () => void };
-
 function Recorder() {
   const [text, setText] = useState("");
   const [lang, setLang] = useState<"en" | "es">("es");
   const [listening, setListening] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
+  const [seconds, setSeconds] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [quote, setQuote] = useState<Quote | null>(null);
-  const recRef = useRef<SR | null>(null);
+  const recRef = useRef<Awaited<ReturnType<typeof recordWav>> | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const toggleMic = () => {
-    if (listening) return recRef.current?.stop();
-    const W = window as unknown as { SpeechRecognition?: new () => SR; webkitSpeechRecognition?: new () => SR };
-    const Ctor = W.SpeechRecognition ?? W.webkitSpeechRecognition;
-    if (!Ctor) return setError("Tu navegador no permite dictado. Escribe o usa un ejemplo.");
-    const rec = new Ctor();
-    rec.lang = "es-US";
-    rec.continuous = true;
-    rec.interimResults = true;
-    rec.onresult = (e) => setText(Array.from(e.results).map((r) => r[0].transcript).join(" "));
-    rec.onend = () => setListening(false);
-    rec.onerror = () => setListening(false);
-    recRef.current = rec;
-    setError(null);
-    rec.start();
-    setListening(true);
-  };
+  useEffect(() => () => { recRef.current?.cancel(); if (timerRef.current) clearInterval(timerRef.current); }, []);
 
-  const generate = async () => {
+  const generate = async (transcript = text) => {
     setLoading(true); setError(null); setQuote(null);
     try {
-      const r = await generateEnglishQuote({ data: { transcript: text, language: lang } });
+      const r = await generateEnglishQuote({ data: { transcript, language: lang } });
       if (r.ok) setQuote(r.quote); else setError(r.error);
     } catch { setError("Error de conexión. Intenta de nuevo."); }
     setLoading(false);
   };
+
+  const toggleMic = async () => {
+    if (transcribing || loading) return;
+    if (listening) {
+      const rec = recRef.current; recRef.current = null;
+      setListening(false);
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (!rec) return;
+      setTranscribing(true);
+      try {
+        const file = await rec.stop();
+        const form = new FormData();
+        form.append("file", file);
+        const res = await fetch("/api/transcribe", { method: "POST", body: form });
+        const j = (await res.json().catch(() => ({}))) as { text?: string; error?: string };
+        if (!res.ok || !j.text) { setError(j.error ?? "No escuchamos nada. Intenta otra vez."); return; }
+        const t = text.trim() ? `${text.trim()} ${j.text}` : j.text;
+        setText(t);
+        setTranscribing(false);
+        if (t.trim().length >= 5) await generate(t);
+      } catch (e) {
+        setError((e as Error).message === "empty" ? "La grabación salió vacía. Mantén presionado y habla más tiempo." : "No pudimos procesar el audio. Intenta otra vez.");
+      } finally { setTranscribing(false); }
+      return;
+    }
+    if (!navigator.mediaDevices?.getUserMedia) return setError("Tu navegador no permite usar el micrófono. Escribe o usa un ejemplo.");
+    setError(null);
+    try {
+      recRef.current = await recordWav();
+      setSeconds(0);
+      timerRef.current = setInterval(() => setSeconds((s) => {
+        if (s + 1 >= 180) void toggleMicRef.current();
+        return s + 1;
+      }), 1000);
+      setListening(true);
+    } catch {
+      setError("Necesitamos permiso para usar el micrófono. Actívalo en la configuración del navegador.");
+    }
+  };
+  const toggleMicRef = useRef(toggleMic);
+  toggleMicRef.current = toggleMic;
+  const busy = transcribing || loading;
 
   const total = quote?.items.reduce((s, i) => s + i.total, 0) ?? 0;
   const fmt = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD" });
@@ -83,16 +111,22 @@ function Recorder() {
               className={`rounded-lg py-3 font-extrabold ${lang === v ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>{l}</button>
           ))}
         </div>
-        <p className="mt-3 text-sm text-muted-foreground">Di el nombre del cliente, el trabajo a realizar, los materiales y el precio de tu mano de obra.</p>
+        <p className="mt-3 text-sm text-muted-foreground">Habla como hablas normalmente: el cliente, el trabajo, los materiales y lo que cobras. La IA lo ordena y lo deja profesional.</p>
 
-        <div className="my-8 flex justify-center">
-          <button onClick={toggleMic} aria-label={listening ? "Detener" : "Grabar"}
-            className={`flex h-28 w-28 items-center justify-center rounded-full bg-primary text-primary-foreground ${listening ? "mic-pulse" : ""}`}>
-            {listening ? <Square className="h-10 w-10" /> : <Mic className="h-12 w-12" />}
+        <div className="my-8 flex flex-col items-center gap-3">
+          <button onClick={toggleMic} disabled={busy} aria-label={listening ? "Detener" : "Grabar"}
+            className={`flex h-28 w-28 items-center justify-center rounded-full bg-primary text-primary-foreground disabled:opacity-60 ${listening ? "mic-pulse" : ""}`}>
+            {busy ? <Loader2 className="h-10 w-10 animate-spin" /> : listening ? <Square className="h-10 w-10" /> : <Mic className="h-12 w-12" />}
           </button>
+          <p className="text-sm font-semibold text-muted-foreground">
+            {listening ? `Grabando… ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")} · toca para terminar`
+              : transcribing ? "Escuchando tu grabación…"
+              : loading ? "Armando tu presupuesto…"
+              : "Toca para hablar"}
+          </p>
         </div>
 
-        <textarea value={text} onChange={(e) => setText(e.target.value)} rows={4} placeholder="Lo que digas aparece aquí…"
+        <textarea value={text} onChange={(e) => setText(e.target.value)} rows={4} placeholder="Lo que digas aparece aquí (también puedes escribir)…"
           className="w-full rounded-xl border border-border bg-card p-4 text-base outline-none focus:border-primary" />
 
         <div className="mt-3 flex flex-col gap-2">
@@ -103,9 +137,9 @@ function Recorder() {
           ))}
         </div>
 
-        <button onClick={generate} disabled={loading || text.trim().length < 5}
+        <button onClick={() => generate()} disabled={busy || listening || text.trim().length < 5}
           className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 text-lg font-extrabold text-primary-foreground disabled:opacity-50">
-          {loading ? <><Loader2 className="h-5 w-5 animate-spin" /> Traduciendo y calculando…</> : lang === "en" ? "Crear presupuesto en inglés" : "Crear presupuesto en español"}
+          {loading ? <><Loader2 className="h-5 w-5 animate-spin" /> Armando presupuesto…</> : quote ? "Volver a generar" : lang === "en" ? "Crear presupuesto en inglés" : "Crear presupuesto en español"}
         </button>
         {error && <p className="mt-3 rounded-lg bg-destructive p-3 text-sm text-destructive-foreground">{error}</p>}
 
