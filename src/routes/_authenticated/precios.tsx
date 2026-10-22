@@ -8,8 +8,10 @@ import { useAccount } from "@/hooks/use-account";
 import { MONTHLY_PLAN_USD, PRICE_IDS, PRICE_PER_QUOTE_USD, freeLeft } from "@/lib/pricing";
 
 export const Route = createFileRoute("/_authenticated/precios")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, follow" },
       { title: "Precios ObraFácil — $1 por presupuesto o $10 al mes" },
       { name: "description", content: "Paga $1 por presupuesto o $10 al mes por presupuestos ilimitados con tu logo." },
       { property: "og:title", content: "Precios ObraFácil" },

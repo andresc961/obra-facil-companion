@@ -4,15 +4,30 @@ import logoIcon from "@/assets/logo-icon.png";
 import { useSessionUser } from "@/hooks/use-session-user";
 
 export const Route = createFileRoute("/")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
-      { title: "ObraFácil — Presupuestos de obra por voz en 30 segundos" },
-      { name: "description", content: "Habla en español y tu cliente recibe el presupuesto y el mensaje en inglés (o en español, tú escoges). Envía tu presupuesto en PDF por WhatsApp en 30 segundos." },
+      { title: "ObraFácil | Presupuestos de construcción por voz" },
+      { name: "description", content: "Crea presupuestos de construcción por voz con IA. Habla en español y envía el PDF y mensaje en inglés o español. Prueba 3 presupuestos gratis." },
       { property: "og:title", content: "ObraFácil — Hablas español, tu cliente lo recibe en inglés" },
-      { property: "og:description", content: "Habla a tu teléfono. El presupuesto y el mensaje de WhatsApp salen en inglés o en español, como tú quieras." },
+      { property: "og:description", content: "Presupuestos profesionales para contratistas: dicta en español, edita tu cotización y comparte el PDF y mensaje en inglés o español." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://obrafacil.biz/" },
+      { property: "og:locale", content: "es_US" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://obrafacil.biz/" }],
+    scripts: [{
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          { "@type": "Organization", "@id": "https://obrafacil.biz/#organization", name: "ObraFácil", url: "https://obrafacil.biz/" },
+          { "@type": "WebSite", "@id": "https://obrafacil.biz/#website", name: "ObraFácil", url: "https://obrafacil.biz/", inLanguage: "es", publisher: { "@id": "https://obrafacil.biz/#organization" } },
+          { "@type": "SoftwareApplication", name: "ObraFácil", url: "https://obrafacil.biz/", applicationCategory: "BusinessApplication", operatingSystem: "Web", description: "Aplicación para contratistas que convierte voz en español en presupuestos profesionales y mensajes en inglés o español.", featureList: ["Presupuestos por voz", "PDF en español o inglés", "Edición de partidas y totales", "Logo y datos de empresa con Plan Maestro"] },
+        ],
+      }),
+    }],
   }),
   component: Index,
 });

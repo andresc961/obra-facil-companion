@@ -4,11 +4,13 @@ import { useEffect } from "react";
 import { CheckCircle2 } from "lucide-react";
 
 export const Route = createFileRoute("/checkout/return")({
+  staticData: { sitemap: false },
   validateSearch: (s: Record<string, unknown>): { session_id?: string | undefined } => ({
     session_id: typeof s["session_id"] === "string" ? s["session_id"] : undefined,
   }),
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, follow" },
       { title: "Pago recibido — ObraFácil" },
       { name: "description", content: "Gracias por tu pago en ObraFácil." },
       { property: "og:title", content: "Pago recibido — ObraFácil" },
