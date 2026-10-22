@@ -4,11 +4,11 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 
-type AuthSearch = { modo?: "entrar" | "crear" };
+type AuthSearch = { modo?: "entrar" | "crear" | undefined };
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (search: Record<string, unknown>): AuthSearch => ({
-    modo: search.modo === "entrar" ? "entrar" : search.modo === "crear" ? "crear" : undefined,
+    modo: search["modo"] === "entrar" ? "entrar" : search["modo"] === "crear" ? "crear" : undefined,
   }),
   head: () => ({
     meta: [
