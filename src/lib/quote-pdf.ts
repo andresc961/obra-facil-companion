@@ -16,9 +16,13 @@ function wrap(text: string, font: PDFFont, size: number, width: number) {
   const lines: string[] = [];
   for (const paragraph of printable(text).split("\n")) {
     let line = "";
-    for (const word of paragraph.split(/\s+/)) {
-      for (const letter of (line ? " " : "") + word) {
-        if (font.widthOfTextAtSize(line + letter, size) > width) { lines.push(line); line = letter.trim(); continue; }
+    for (const word of paragraph.split(/\s+/).filter(Boolean)) {
+      const next = line ? `${line} ${word}` : word;
+      if (font.widthOfTextAtSize(next, size) <= width) { line = next; continue; }
+      if (line) lines.push(line);
+      line = "";
+      for (const letter of word) {
+        if (line && font.widthOfTextAtSize(line + letter, size) > width) { lines.push(line); line = ""; }
         line += letter;
       }
     }
