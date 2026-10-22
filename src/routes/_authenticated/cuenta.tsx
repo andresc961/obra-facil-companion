@@ -12,8 +12,10 @@ import { getStripeEnvironment } from "@/lib/stripe";
 import { canUseBranding, freeLeft } from "@/lib/pricing";
 
 export const Route = createFileRoute("/_authenticated/cuenta")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, follow" },
       { title: "Mi cuenta — ObraFácil" },
       { name: "description", content: "Tu plan, tus presupuestos y los datos de tu empresa." },
       { property: "og:title", content: "Mi cuenta — ObraFácil" },

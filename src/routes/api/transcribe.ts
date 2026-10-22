@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 const MAX = 20 * 1024 * 1024;
 
 export const Route = createFileRoute("/api/transcribe")({
+  staticData: { sitemap: false },
   server: {
     handlers: {
       POST: async ({ request }) => {

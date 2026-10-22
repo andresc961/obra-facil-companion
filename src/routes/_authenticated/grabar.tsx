@@ -17,8 +17,10 @@ import { recordWav } from "@/lib/record-wav";
 
 
 export const Route = createFileRoute("/_authenticated/grabar")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, follow" },
       { title: "Grabadora ObraFácil — Habla en español, cotiza en español o inglés" },
       { name: "description", content: "Dicta tu presupuesto en español y ObraFácil lo convierte en una cotización profesional en español o inglés." },
       { property: "og:title", content: "Grabadora ObraFácil" },

@@ -14,3 +14,6 @@
 - Company logos are stored as small data URLs in `business_profiles` because public storage buckets are blocked in this workspace.
 - Quote PDFs are generated from current quote data with pdf-lib in a lazy-loaded browser module; prepare the Blob before clicking to preserve mobile download/share activation.
 - Per-quote company branding is resolved through selectedBrand for preview, PDF and WhatsApp together, so subscriber eligibility and opt-out stay consistent.
+
+- Search metadata lives on leaf routes; the root contains sitewide defaults only to avoid conflicting page identities.
+- The sitemap derives public URLs from required route staticData.sitemap decisions; exclude the authenticated subtree and utility routes to keep customer surfaces out of discovery. Use authoritative page-specific lastmod timestamps only, otherwise omit them.

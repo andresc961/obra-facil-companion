@@ -7,11 +7,13 @@ import { lovable } from "@/integrations/lovable";
 type AuthSearch = { modo?: "entrar" | "crear" | undefined };
 
 export const Route = createFileRoute("/auth")({
+  staticData: { sitemap: false },
   validateSearch: (search: Record<string, unknown>): AuthSearch => ({
     modo: search["modo"] === "entrar" ? "entrar" : search["modo"] === "crear" ? "crear" : undefined,
   }),
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, follow" },
       { title: "Entrar a ObraFácil" },
       { name: "description", content: "Crea tu cuenta gratis o entra para hacer presupuestos por voz." },
       { property: "og:title", content: "Entrar a ObraFácil" },
