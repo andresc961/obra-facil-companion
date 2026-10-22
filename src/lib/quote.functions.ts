@@ -25,7 +25,7 @@ Never output Spanish except proper names.`;
 export const generateEnglishQuote = createServerFn({ method: "POST" })
   .inputValidator((input) => z.object({ transcript: z.string().min(5).max(4000) }).parse(input))
   .handler(async ({ data }) => {
-    const apiKey = process.env.LOVABLE_API_KEY;
+    const apiKey = process.env["LOVABLE_API_KEY"];
     if (!apiKey) throw new Error("AI is not configured.");
     const { createOpenAI } = await import("@ai-sdk/openai");
     const { streamText, Output, NoObjectGeneratedError } = await import("ai");
