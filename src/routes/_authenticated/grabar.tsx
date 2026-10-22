@@ -11,7 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { selectedBrand } from "@/lib/quote-branding";
 import { useAccount } from "@/hooks/use-account";
 import { getStripeEnvironment } from "@/lib/stripe";
-import { canCreateQuote, canUseBranding, freeLeft } from "@/lib/pricing";
+import { canCreateQuote, canUseBranding, freeMonthEnds, inFreeMonth } from "@/lib/pricing";
 import { generateEnglishQuote, type Quote } from "@/lib/quote.functions";
 import { recordWav } from "@/lib/record-wav";
 
@@ -123,7 +123,9 @@ function Recorder() {
         <AppHeader back="/" />
         {acc && (
           <Link to={acc.subscribed ? "/cuenta" : "/precios"} className="mb-3 block rounded-xl border border-border bg-card px-4 py-2 text-sm">
-            {acc.subscribed ? "⭐ Plan Maestro · ilimitado" : <>Te quedan <b>{freeLeft(acc)} gratis</b>{acc.paidCredits > 0 && <> y <b>{acc.paidCredits} pagados</b></>} · <span className="text-primary underline">Ver planes</span></>}
+            {acc.subscribed ? "⭐ Plan Maestro · ilimitado"
+              : inFreeMonth(acc) ? <>🎁 <b>Mes gratis</b> · termina el {freeMonthEnds(acc)}{acc.paidCredits > 0 && <> y <b>{acc.paidCredits} pagados</b></>} · <span className="text-primary underline">Ver planes</span></>
+              : <>Tu mes gratis terminó{acc.paidCredits > 0 && <> · tienes <b>{acc.paidCredits} pagados</b></>} · <span className="text-primary underline">Ver planes</span></>}
           </Link>
         )}
 
@@ -169,7 +171,7 @@ function Recorder() {
         </button>
         {needsPayment && (
           <div className="mt-4 rounded-2xl border-2 border-primary bg-card p-5">
-            <p className="font-display text-xl">Ya usaste tus 3 presupuestos gratis</p>
+            <p className="font-display text-xl">Ya terminó tu mes gratis</p>
             <p className="mt-1 text-sm text-muted-foreground">Paga $1 por presupuesto, o $10 al mes para presupuestos ilimitados con tu logo y datos de empresa.</p>
             <Link to="/precios" className="mt-4 block rounded-xl bg-primary py-3 text-center font-extrabold text-primary-foreground">Ver opciones</Link>
           </div>

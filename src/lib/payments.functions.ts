@@ -104,7 +104,7 @@ export const getAccount = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const [{ data: usage }, { data: subscribed }, { data: profile }, { data: sub }] = await Promise.all([
-      supabase.from("quote_usage").select("free_used, paid_credits").eq("user_id", userId).eq("environment", data.environment).maybeSingle(),
+      supabase.from("quote_usage").select("free_used, paid_credits, trial_ends_at").eq("user_id", userId).eq("environment", data.environment).maybeSingle(),
       supabase.rpc("has_active_subscription", { user_uuid: userId, check_env: data.environment }),
       supabase.from("business_profiles").select("company_name, phone, email, address, logo_url").eq("user_id", userId).maybeSingle(),
       supabase.from("subscriptions").select("status, current_period_end, cancel_at_period_end").eq("user_id", userId).eq("environment", data.environment).order("created_at", { ascending: false }).limit(1).maybeSingle(),
@@ -113,6 +113,7 @@ export const getAccount = createServerFn({ method: "POST" })
       subscribed: !!subscribed,
       freeUsed: usage?.free_used ?? 0,
       paidCredits: usage?.paid_credits ?? 0,
+      trialEndsAt: usage?.trial_ends_at ?? null,
       profile: profile ?? null,
       subscription: sub ?? null,
     };

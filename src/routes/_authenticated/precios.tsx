@@ -5,7 +5,7 @@ import { Check, Minus, Plus } from "lucide-react";
 import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { useAccount } from "@/hooks/use-account";
-import { MONTHLY_PLAN_USD, PRICE_IDS, PRICE_PER_QUOTE_USD, freeLeft } from "@/lib/pricing";
+import { MONTHLY_PLAN_USD, PRICE_IDS, PRICE_PER_QUOTE_USD, freeMonthEnds, inFreeMonth } from "@/lib/pricing";
 
 export const Route = createFileRoute("/_authenticated/precios")({
   staticData: { sitemap: false },
@@ -36,7 +36,7 @@ function Pricing() {
 
         {acc && (
           <p className="rounded-xl bg-card p-4 text-sm">
-            {acc.subscribed ? "✅ Tienes el Plan Maestro activo." : `Te quedan ${freeLeft(acc)} gratis y ${acc.paidCredits} pagados.`}
+            {acc.subscribed ? "✅ Tienes el Plan Maestro activo." : inFreeMonth(acc) ? `🎁 Tu mes gratis termina el ${freeMonthEnds(acc)}.` : acc.paidCredits > 0 ? `Tu mes gratis terminó. Tienes ${acc.paidCredits} presupuesto${acc.paidCredits > 1 ? "s" : ""} pagados.` : "Tu mes gratis terminó. Elige cómo continuar."}
           </p>
         )}
 

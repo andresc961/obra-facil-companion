@@ -17,7 +17,7 @@ export const Route = createFileRoute("/auth")({
       { title: "Entrar a ObraFácil" },
       { name: "description", content: "Crea tu cuenta gratis o entra para hacer presupuestos por voz." },
       { property: "og:title", content: "Entrar a ObraFácil" },
-      { property: "og:description", content: "Tus primeros 3 presupuestos son gratis." },
+      { property: "og:description", content: "Tu primer mes es gratis." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -67,7 +67,7 @@ function AuthPage() {
       <div className="mx-auto max-w-md py-4">
         <Link to="/" className="inline-flex rounded-lg bg-card p-2"><ArrowLeft className="h-5 w-5" /></Link>
         <h1 className="mt-6 font-display text-3xl">{mode === "up" ? "Crea tu cuenta gratis" : "Entra a tu cuenta"}</h1>
-        <p className="mt-2 text-muted-foreground">Tus primeros 3 presupuestos son gratis.</p>
+        <p className="mt-2 text-muted-foreground">Tu primer mes es gratis.</p>
 
         <button onClick={google} className="mt-6 w-full rounded-xl bg-paper py-4 font-extrabold text-paper-foreground">Continuar con Google</button>
         <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground"><span className="h-px flex-1 bg-border" />o con tu correo<span className="h-px flex-1 bg-border" /></div>
