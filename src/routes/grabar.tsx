@@ -111,16 +111,22 @@ function Recorder() {
               className={`rounded-lg py-3 font-extrabold ${lang === v ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>{l}</button>
           ))}
         </div>
-        <p className="mt-3 text-sm text-muted-foreground">Di el nombre del cliente, el trabajo a realizar, los materiales y el precio de tu mano de obra.</p>
+        <p className="mt-3 text-sm text-muted-foreground">Habla como hablas normalmente: el cliente, el trabajo, los materiales y lo que cobras. La IA lo ordena y lo deja profesional.</p>
 
-        <div className="my-8 flex justify-center">
-          <button onClick={toggleMic} aria-label={listening ? "Detener" : "Grabar"}
-            className={`flex h-28 w-28 items-center justify-center rounded-full bg-primary text-primary-foreground ${listening ? "mic-pulse" : ""}`}>
-            {listening ? <Square className="h-10 w-10" /> : <Mic className="h-12 w-12" />}
+        <div className="my-8 flex flex-col items-center gap-3">
+          <button onClick={toggleMic} disabled={busy} aria-label={listening ? "Detener" : "Grabar"}
+            className={`flex h-28 w-28 items-center justify-center rounded-full bg-primary text-primary-foreground disabled:opacity-60 ${listening ? "mic-pulse" : ""}`}>
+            {busy ? <Loader2 className="h-10 w-10 animate-spin" /> : listening ? <Square className="h-10 w-10" /> : <Mic className="h-12 w-12" />}
           </button>
+          <p className="text-sm font-semibold text-muted-foreground">
+            {listening ? `Grabando… ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")} · toca para terminar`
+              : transcribing ? "Escuchando tu grabación…"
+              : loading ? "Armando tu presupuesto…"
+              : "Toca para hablar"}
+          </p>
         </div>
 
-        <textarea value={text} onChange={(e) => setText(e.target.value)} rows={4} placeholder="Lo que digas aparece aquí…"
+        <textarea value={text} onChange={(e) => setText(e.target.value)} rows={4} placeholder="Lo que digas aparece aquí (también puedes escribir)…"
           className="w-full rounded-xl border border-border bg-card p-4 text-base outline-none focus:border-primary" />
 
         <div className="mt-3 flex flex-col gap-2">
@@ -131,9 +137,9 @@ function Recorder() {
           ))}
         </div>
 
-        <button onClick={generate} disabled={loading || text.trim().length < 5}
+        <button onClick={() => generate()} disabled={busy || listening || text.trim().length < 5}
           className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 text-lg font-extrabold text-primary-foreground disabled:opacity-50">
-          {loading ? <><Loader2 className="h-5 w-5 animate-spin" /> Traduciendo y calculando…</> : lang === "en" ? "Crear presupuesto en inglés" : "Crear presupuesto en español"}
+          {loading ? <><Loader2 className="h-5 w-5 animate-spin" /> Armando presupuesto…</> : quote ? "Volver a generar" : lang === "en" ? "Crear presupuesto en inglés" : "Crear presupuesto en español"}
         </button>
         {error && <p className="mt-3 rounded-lg bg-destructive p-3 text-sm text-destructive-foreground">{error}</p>}
 
