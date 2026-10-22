@@ -9,6 +9,7 @@ import { getStripeEnvironment } from "@/lib/stripe";
 import { canCreateQuote, canUseBranding, freeLeft } from "@/lib/pricing";
 import { generateEnglishQuote, type Quote } from "@/lib/quote.functions";
 import { recordWav } from "@/lib/record-wav";
+import logoIcon from "@/assets/logo-icon.png";
 
 export const Route = createFileRoute("/_authenticated/grabar")({
   head: () => ({
