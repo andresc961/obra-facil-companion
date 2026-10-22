@@ -105,7 +105,7 @@ function Recorder() {
 
         <button onClick={generate} disabled={loading || text.trim().length < 5}
           className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 text-lg font-extrabold text-primary-foreground disabled:opacity-50">
-          {loading ? <><Loader2 className="h-5 w-5 animate-spin" /> Traduciendo y calculando…</> : {lang === "en" ? "Crear presupuesto en inglés" : "Crear presupuesto en español"}}
+          {loading ? <><Loader2 className="h-5 w-5 animate-spin" /> Traduciendo y calculando…</> : lang === "en" ? "Crear presupuesto en inglés" : "Crear presupuesto en español"}
         </button>
         {error && <p className="mt-3 rounded-lg bg-destructive p-3 text-sm text-destructive-foreground">{error}</p>}
 
