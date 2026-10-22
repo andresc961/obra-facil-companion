@@ -46,7 +46,7 @@ async function brandColor(dataUrl: string): Promise<[number, number, number]> {
     const d = ctx.getImageData(0, 0, 48, 48).data;
     let r = 0, g = 0, b = 0, n = 0;
     for (let i = 0; i < d.length; i += 4) {
-      const [pr, pg, pb, a] = [d[i], d[i + 1], d[i + 2], d[i + 3]];
+      const pr = d[i] ?? 0, pg = d[i + 1] ?? 0, pb = d[i + 2] ?? 0, a = d[i + 3] ?? 0;
       const max = Math.max(pr, pg, pb), min = Math.min(pr, pg, pb);
       if (a < 200 || max - min < 40 || max < 40) continue;
       r += pr; g += pg; b += pb; n++;
