@@ -1,6 +1,6 @@
 - [x] Add downloadable PDFs using the latest edited quote and selected client language.
 - [x] Make monthly-plan company branding optional on each quote and improve logo/contact settings.
 - [x] Verify subscriber branding, PDF downloads, and export tests.
-- [ ] Improve public search metadata and structured data.
-- [ ] Add a router-derived sitemap excluding accounts and checkout.
-- [ ] Verify rendered search tags and sitemap behavior.
+- [x] Improve public search metadata and structured data.
+- [x] Add a router-derived sitemap excluding accounts and checkout.
+- [x] Verify rendered search tags and sitemap behavior.
