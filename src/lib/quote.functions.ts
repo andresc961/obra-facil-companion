@@ -33,7 +33,7 @@ export const generateEnglishQuote = createServerFn({ method: "POST" })
     if (!apiKey) throw new Error("AI is not configured.");
     const { supabase, userId } = context;
     const [{ data: usage }, { data: subscribed }] = await Promise.all([
-      supabase.from("quote_usage").select("free_used, paid_credits").eq("user_id", userId).eq("environment", data.environment).maybeSingle(),
+      supabase.from("quote_usage").select("free_used, paid_credits, trial_ends_at").eq("user_id", userId).eq("environment", data.environment).maybeSingle(),
       supabase.rpc("has_active_subscription", { user_uuid: userId, check_env: data.environment }),
     ]);
     if (!canCreateQuote({ subscribed: !!subscribed, freeUsed: usage?.free_used ?? 0, paidCredits: usage?.paid_credits ?? 0, trialEndsAt: usage?.trial_ends_at ?? null })) {
