@@ -10,7 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as GrabarRouteImport } from './routes/grabar'
+import { Route as AuthenticatedGrabarRouteImport } from './routes/_authenticated/grabar'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
@@ -19,8 +19,8 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GrabarRoute = GrabarRouteImport.update({
-  id: '/grabar',
+const AuthenticatedGrabarRoute = AuthenticatedGrabarRouteImport.update({
+  id: '/_authenticated/grabar',
   path: '/grabar',
   getParentRoute: () => rootRouteImport,
 } as any)
@@ -38,20 +38,20 @@ const ApiPublicPaymentsWebhookRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/grabar': typeof GrabarRoute
+  '/grabar': typeof AuthenticatedGrabarRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/grabar': typeof GrabarRoute
+  '/grabar': typeof AuthenticatedGrabarRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/grabar': typeof GrabarRoute
+  '/_authenticated/grabar': typeof AuthenticatedGrabarRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -64,14 +64,14 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/grabar'
+    | '/_authenticated/grabar'
     | '/api/transcribe'
     | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  GrabarRoute: typeof GrabarRoute
+  AuthenticatedGrabarRoute: typeof AuthenticatedGrabarRoute
   ApiTranscribeRoute: typeof ApiTranscribeRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
@@ -85,11 +85,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/grabar': {
-      id: '/grabar'
+    '/_authenticated/grabar': {
+      id: '/_authenticated/grabar'
       path: '/grabar'
       fullPath: '/grabar'
-      preLoaderRoute: typeof GrabarRouteImport
+      preLoaderRoute: typeof AuthenticatedGrabarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/transcribe': {
@@ -111,7 +111,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  GrabarRoute: GrabarRoute,
+  AuthenticatedGrabarRoute: AuthenticatedGrabarRoute,
   ApiTranscribeRoute: ApiTranscribeRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }

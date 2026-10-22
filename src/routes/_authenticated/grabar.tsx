@@ -4,7 +4,7 @@ import { Mic, Square, Loader2, MessageCircle, ArrowLeft, Languages } from "lucid
 import { generateEnglishQuote, type Quote } from "@/lib/quote.functions";
 import { recordWav } from "@/lib/record-wav";
 
-export const Route = createFileRoute("/grabar")({
+export const Route = createFileRoute("/_authenticated/grabar")({
   head: () => ({
     meta: [
       { title: "Grabadora ObraFácil — Habla en español, cotiza en español o inglés" },
