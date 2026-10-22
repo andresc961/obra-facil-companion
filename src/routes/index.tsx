@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Mic, FileText, MessageCircle, PenLine, Check, ArrowDown, Languages } from "lucide-react";
+import { Mic, FileText, MessageCircle, PenLine, Check, ArrowDown, Languages, LogIn, UserRound } from "lucide-react";
 import logoIcon from "@/assets/logo-icon.png";
+import { useSessionUser } from "@/hooks/use-session-user";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const { ready, user } = useSessionUser();
   const steps = [
     { icon: Mic, t: "Habla", d: "Di el cliente, el trabajo, materiales y tu mano de obra." },
     { icon: Languages, t: "Escoge el idioma", d: "Español o inglés para tu cliente. Tú siempre hablas en español." },
@@ -27,12 +29,27 @@ function Index() {
   return (
     <main className="min-h-screen bg-background font-sans text-foreground">
       <div className="hazard h-2" />
-      <header className="mx-auto flex max-w-xl items-center justify-between px-5 py-4">
+      <header className="mx-auto flex max-w-xl items-center justify-between gap-3 px-5 py-4">
         <span className="flex items-center gap-2">
           <img src={logoIcon} alt="" aria-hidden="true" width={256} height={256} className="h-7 w-7 shrink-0" />
           <span className="font-display text-xl text-primary">ObraFácil</span>
         </span>
-        <span className="rounded-full border border-primary px-3 py-1 text-xs font-semibold text-primary">3 gratis</span>
+        {user ? (
+          <Link to="/cuenta" className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-bold">
+            <UserRound className="h-4 w-4 text-primary" /> Mi cuenta
+          </Link>
+        ) : (
+          <span className="flex shrink-0 items-center gap-2">
+            <span className="rounded-full border border-primary px-3 py-1 text-xs font-semibold text-primary">3 gratis</span>
+            {ready ? (
+              <Link to="/auth" search={{ modo: "entrar" }} className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-1.5 text-xs font-extrabold text-primary-foreground">
+                <LogIn className="h-4 w-4" /> Entrar
+              </Link>
+            ) : (
+              <span className="h-8 w-24 rounded-full bg-card" aria-hidden="true" />
+            )}
+          </span>
+        )}
       </header>
 
       <section className="mx-auto max-w-xl px-5 pb-10 pt-4">
@@ -68,6 +85,13 @@ function Index() {
         </div>
 
         <Link to="/grabar" className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-4 text-lg font-extrabold text-primary-foreground"><Mic className="h-6 w-6" /> Crear mi presupuesto por voz</Link>
+        {!user && (ready ? (
+          <Link to="/auth" search={{ modo: "entrar" }} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-primary bg-card px-6 py-3.5 font-extrabold text-primary">
+            <LogIn className="h-5 w-5" /> Ya tengo cuenta — Entrar
+          </Link>
+        ) : (
+          <span className="mt-3 block h-14 rounded-xl bg-card" aria-hidden="true" />
+        ))}
         <p className="mt-3 text-center text-sm text-muted-foreground">Tus primeros 3 presupuestos son gratis.</p>
       </section>
 

@@ -4,7 +4,12 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 
+type AuthSearch = { modo?: "entrar" | "crear" };
+
 export const Route = createFileRoute("/auth")({
+  validateSearch: (search: Record<string, unknown>): AuthSearch => ({
+    modo: search.modo === "entrar" ? "entrar" : search.modo === "crear" ? "crear" : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Entrar a ObraFácil" },
@@ -20,11 +25,15 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"in" | "up">("up");
+  const { modo } = Route.useSearch();
+  const [mode, setMode] = useState<"in" | "up">(modo === "entrar" ? "in" : "up");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ err?: string; ok?: string }>({});
+  useEffect(() => { if (modo) setMode(modo === "entrar" ? "in" : "up"); }, [modo]);
+
+
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => { if (data.session) navigate({ to: "/grabar", replace: true }); });
