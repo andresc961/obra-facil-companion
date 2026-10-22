@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { AppHeader } from "@/components/AppHeader";
 import { useState } from "react";
-import { ArrowLeft, Check, Minus, Plus } from "lucide-react";
+import { Check, Minus, Plus } from "lucide-react";
 import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { useAccount } from "@/hooks/use-account";
@@ -29,10 +30,7 @@ function Pricing() {
     <main className="min-h-screen bg-background pb-16 font-sans text-foreground">
       <PaymentTestModeBanner />
       <div className="mx-auto max-w-xl px-5">
-        <header className="flex items-center gap-3 py-4">
-          <Link to="/grabar" className="rounded-lg bg-card p-2"><ArrowLeft className="h-5 w-5" /></Link>
-          <span className="font-display text-xl">Elige cómo pagar</span>
-        </header>
+        <AppHeader back="/grabar" title="Elige cómo pagar" />
 
         {acc && (
           <p className="rounded-xl bg-card p-4 text-sm">
