@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Mic, FileText, MessageCircle, PenLine, Check, ArrowDown, Languages } from "lucide-react";
-import logoDark from "@/assets/logo-modern-dark.png";
+import logoIcon from "@/assets/logo-icon.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -28,7 +28,10 @@ function Index() {
     <main className="min-h-screen bg-background font-sans text-foreground">
       <div className="hazard h-2" />
       <header className="mx-auto flex max-w-xl items-center justify-between px-5 py-4">
-        <img src={logoDark} alt="ObraFácil" width={949} height={362} className="h-9 w-auto" />
+        <span className="flex items-center gap-2">
+          <img src={logoIcon} alt="" aria-hidden="true" width={256} height={256} className="h-7 w-7 shrink-0" />
+          <span className="font-display text-xl text-primary">ObraFácil</span>
+        </span>
         <span className="rounded-full border border-primary px-3 py-1 text-xs font-semibold text-primary">3 gratis</span>
       </header>
 
