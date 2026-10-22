@@ -91,14 +91,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "ObraFácil" },
-      { name: "description", content: "Presupuestos de obra por voz para contratistas" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "ObraFácil" },
-      { property: "og:description", content: "Presupuestos de obra por voz para contratistas" },
+      { title: "ObraFácil — Presupuestos de obra por voz en 30 segundos" },
+      { name: "description", content: "Habla en español y tu cliente recibe el presupuesto y el mensaje en inglés o español. PDF por WhatsApp en 30 segundos." },
+      { property: "og:title", content: "ObraFácil — Hablas español, tu cliente lo recibe en inglés" },
+      { property: "og:description", content: "Presupuestos de obra por voz para contratistas. PDF y mensaje de WhatsApp en inglés o español." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
