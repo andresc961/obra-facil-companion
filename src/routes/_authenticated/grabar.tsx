@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Mic, Square, Loader2, MessageCircle, ArrowLeft, Languages, UserRound, Pencil, Check } from "lucide-react";
+import { Mic, Square, Loader2, ArrowLeft, Languages, UserRound, Pencil, Check } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { QuoteEditor } from "@/components/QuoteEditor";
@@ -224,11 +224,7 @@ function Recorder() {
               <p className="text-xs font-semibold text-muted-foreground">Mensaje para tu cliente ({lang === "en" ? "inglés" : "español"})</p>
               <p className="mt-2 text-sm">{quote.whatsapp_message}</p>
             </div>
-            <QuotePdfDownload quote={quote} language={lang} brand={brand} />
-            <a href={`https://wa.me/?text=${encodeURIComponent(waText)}`} target="_blank" rel="noreferrer"
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-4 text-lg font-extrabold text-accent-foreground">
-              <MessageCircle className="h-6 w-6" /> Enviar por WhatsApp
-            </a>
+            <QuotePdfDownload quote={quote} language={lang} brand={brand} message={waText} />
             </>}
           </section>
         )}
