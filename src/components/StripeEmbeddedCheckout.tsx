@@ -9,7 +9,7 @@ export function StripeEmbeddedCheckout({ priceId, quantity }: { priceId: string;
     const result = await create({
       data: {
         priceId,
-        quantity,
+        quantity: quantity ?? 1,
         returnUrl: `${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
         environment: getStripeEnvironment(),
       },

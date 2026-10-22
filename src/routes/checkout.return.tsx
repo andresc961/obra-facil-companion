@@ -4,8 +4,8 @@ import { useEffect } from "react";
 import { CheckCircle2 } from "lucide-react";
 
 export const Route = createFileRoute("/checkout/return")({
-  validateSearch: (s: Record<string, unknown>): { session_id?: string } => ({
-    session_id: typeof s.session_id === "string" ? s.session_id : undefined,
+  validateSearch: (s: Record<string, unknown>): { session_id?: string | undefined } => ({
+    session_id: typeof s["session_id"] === "string" ? s["session_id"] : undefined,
   }),
   head: () => ({
     meta: [
