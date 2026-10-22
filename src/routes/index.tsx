@@ -1,9 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Mic, FileText, MessageCircle, PenLine, Check } from "lucide-react";
 
-// TODO: replace with the real WhatsApp Business number (digits only, with country code)
-const WA_NUMBER = "15555555555";
-const WA_LINK = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent("Hola, quiero probar ObraFácil y hacer mis presupuestos por voz.")}`;
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -18,15 +15,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Index,
 });
-
-function WhatsAppCta({ label }: { label: string }) {
-  return (
-    <a href={WA_LINK} target="_blank" rel="noreferrer"
-      className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent px-6 py-4 text-lg font-extrabold text-accent-foreground transition-transform active:scale-95">
-      <MessageCircle className="h-6 w-6" /> {label}
-    </a>
-  );
-}
 
 function Index() {
   const steps = [
@@ -72,8 +60,7 @@ function Index() {
           </div>
         </div>
 
-        <Link to="/grabar" className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-4 text-lg font-extrabold text-primary-foreground"><Mic className="h-6 w-6" /> Probar: crear presupuesto por voz</Link>
-        <div className="mt-3"><WhatsAppCta label="Pruébalo gratis por WhatsApp" /></div>
+        <Link to="/grabar" className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-4 text-lg font-extrabold text-primary-foreground"><Mic className="h-6 w-6" /> Crear mi presupuesto por voz</Link>
         <p className="mt-3 text-center text-sm text-muted-foreground">Tus primeros 3 presupuestos son gratis.</p>
       </section>
 
@@ -99,7 +86,6 @@ function Index() {
               <li key={f} className="flex items-center gap-2"><Check className="h-5 w-5 text-accent" />{f}</li>
             ))}
           </ul>
-          <div className="mt-6"><WhatsAppCta label="Quiero ObraFácil" /></div>
         </div>
       </section>
 
