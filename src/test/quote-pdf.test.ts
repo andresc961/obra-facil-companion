@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect } from "vitest";
 import { PDFDocument } from "pdf-lib";
 import { createQuotePdf } from "@/lib/quote-pdf";
@@ -19,7 +20,7 @@ describe("monthly-plan branding", () => {
 
 describe("quote PDF download", () => {
   it("exports a real PDF using the current edited quote and company", async () => {
-    const updated = { ...quote, project_title: "Trabajo corregido", items: [{ ...quote.items[0], total: 900 }] };
+    const updated = { ...quote, project_title: "Trabajo corregido", items: [{ description: "Porcelanato corregido", qty: 15, unit_price: 60, total: 900 }] };
     const blob = await createQuotePdf(updated, "es", profile);
     const pdf = await PDFDocument.load(await blob.arrayBuffer());
     expect(blob.type).toBe("application/pdf");
