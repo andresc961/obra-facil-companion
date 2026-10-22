@@ -32,8 +32,6 @@ export const Route = createFileRoute("/_authenticated/grabar")({
 
 const PRESETS = [
   "Doña Martha: tumbar pared divisoria, poner chirrock con perfiles y pintura blanca. Materiales $500, mano de obra $900.",
-  "Juan Pérez: instalación de porcelanato en baño 15m² con pega y mano de obra $850.",
-  "Don Antonio: reemplazo de láminas de zinc en techo, 20 láminas a $35 cada una, mano de obra $600.",
 ];
 
 function Recorder() {
