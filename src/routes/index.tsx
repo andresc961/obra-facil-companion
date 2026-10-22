@@ -136,7 +136,7 @@ function Index() {
         </div>
       </section>
 
-      <footer className="mx-auto max-w-xl px-5 py-8 text-center text-sm text-muted-foreground">© ObraFácil.app</footer>
+      <footer className="mx-auto max-w-xl px-5 py-8 text-center text-sm text-muted-foreground">© ObraFacil.biz</footer>
       <div className="hazard h-2" />
     </main>
   );
