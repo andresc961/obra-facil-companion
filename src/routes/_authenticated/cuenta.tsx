@@ -1,8 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { AppHeader } from "@/components/AppHeader";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Lock, Loader2, ImagePlus, Trash2 } from "lucide-react";
+import { Lock, Loader2, ImagePlus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAccount } from "@/hooks/use-account";
@@ -94,10 +95,7 @@ function Account() {
   return (
     <main className="min-h-screen bg-background px-5 pb-16 font-sans text-foreground">
       <div className="mx-auto max-w-xl">
-        <header className="flex items-center gap-3 py-4">
-          <Link to="/grabar" className="rounded-lg bg-card p-2"><ArrowLeft className="h-5 w-5" /></Link>
-          <span className="font-display text-xl">Mi cuenta</span>
-        </header>
+        <AppHeader back="/grabar" title="Mi cuenta" />
 
         <section className="rounded-2xl bg-card p-5">
           <p className="text-xs font-semibold uppercase text-muted-foreground">Tu plan</p>
