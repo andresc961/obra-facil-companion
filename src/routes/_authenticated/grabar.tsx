@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppHeader } from "@/components/AppHeader";
 import { useEffect, useRef, useState } from "react";
-import { Mic, Square, Loader2, Languages, Pencil, Check } from "lucide-react";
+import { Mic, Square, Loader2, Languages, Pencil, Check, Building2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { QuoteEditor } from "@/components/QuoteEditor";
@@ -181,12 +181,25 @@ function Recorder() {
         {quote && (
           <section className="mt-8 space-y-4">
             {acc?.subscribed ? (
-              <div className="space-y-2 border-b border-border pb-4">
+              <div className="space-y-3 rounded-2xl border border-border bg-card p-4">
                 <div className="flex items-center justify-between gap-3">
                   <label htmlFor="include-company" className="text-sm font-semibold">Incluir logo y datos de mi empresa</label>
                   <Switch id="include-company" checked={includeCompany} onCheckedChange={setIncludeCompany} />
                 </div>
-                <Button asChild variant="link" className="h-auto px-0"><Link to="/cuenta">{acc.profile ? "Editar datos de empresa" : "Agregar nombre, contacto y logo"}</Link></Button>
+                {acc.profile ? (
+                  <div className="flex items-center gap-3 rounded-xl bg-background p-3">
+                    {acc.profile.logo_url
+                      ? <img src={acc.profile.logo_url} alt="Logo de tu empresa" className="h-11 w-11 shrink-0 rounded-lg bg-paper object-contain" />
+                      : <Building2 className="h-8 w-8 shrink-0 text-muted-foreground" />}
+                    <div className="min-w-0 flex-1 text-sm">
+                      <p className="truncate font-bold">{acc.profile.company_name || "Tu empresa"}</p>
+                      <p className="truncate text-xs text-muted-foreground">{[acc.profile.phone, acc.profile.email].filter(Boolean).join(" · ") || "Sin datos de contacto"}</p>
+                    </div>
+                    <Button asChild variant="outline" size="sm" className="shrink-0 font-bold"><Link to="/cuenta"><Pencil className="h-4 w-4" /> Editar</Link></Button>
+                  </div>
+                ) : (
+                  <Button asChild className="h-12 w-full font-extrabold"><Link to="/cuenta"><Building2 /> Agregar nombre, contacto y logo de tu empresa</Link></Button>
+                )}
               </div>
             ) : <Button asChild variant="link" className="h-auto whitespace-normal px-0"><Link to="/precios">Agregar tu logo y datos con Plan Maestro</Link></Button>}
             <button onClick={() => setEditing(!editing)}
