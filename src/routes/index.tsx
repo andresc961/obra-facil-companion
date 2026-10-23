@@ -8,7 +8,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "ObraFácil | Presupuestos de construcción por voz" },
-      { name: "description", content: "Crea presupuestos de construcción por voz con IA. Habla en español y envía el PDF y mensaje en inglés o español. Tu primer mes es gratis." },
+      { name: "description", content: "Crea presupuestos de construcción por voz con IA. Habla en español y envía el PDF y mensaje en inglés o español. Tus primeros 3 presupuestos son gratis." },
       { property: "og:title", content: "ObraFácil — Hablas español, tu cliente lo recibe en inglés" },
       { property: "og:description", content: "Presupuestos profesionales para contratistas: dicta en español, edita tu cotización y comparte el PDF y mensaje en inglés o español." },
       { property: "og:type", content: "website" },
@@ -55,7 +55,7 @@ function Index() {
           </Link>
         ) : (
           <span className="flex shrink-0 items-center gap-2">
-            <span className="rounded-full border border-primary px-3 py-1 text-xs font-semibold text-primary">1 mes gratis</span>
+            <span className="rounded-full border border-primary px-3 py-1 text-xs font-semibold text-primary">3 gratis</span>
             {ready ? (
               <Link to="/auth" search={{ modo: "entrar" }} className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-1.5 text-xs font-extrabold text-primary-foreground">
                 <LogIn className="h-4 w-4" /> Entrar
@@ -107,7 +107,7 @@ function Index() {
         ) : (
           <span className="mt-3 block h-14 rounded-xl bg-card" aria-hidden="true" />
         ))}
-        <p className="mt-3 text-center text-sm text-muted-foreground">Tu primer mes es gratis — presupuestos ilimitados.</p>
+        <p className="mt-3 text-center text-sm text-muted-foreground">Tus primeros 3 presupuestos son gratis.</p>
       </section>
 
       <section className="mx-auto max-w-xl px-5 py-10">
@@ -157,7 +157,7 @@ function Index() {
 
       <section className="mx-auto max-w-xl px-5 py-10">
         <h2 className="font-display text-2xl">Precios simples</h2>
-        <p className="mt-2 text-muted-foreground">Tu primer mes es gratis y sin límite. Después tú escoges:</p>
+        <p className="mt-2 text-muted-foreground">Tus primeros 3 presupuestos son gratis. Después tú escoges:</p>
         <div className="mt-6 space-y-4">
           <div className="rounded-2xl border border-border bg-card p-6">
             <p className="text-sm font-semibold text-muted-foreground">Paga solo lo que uses</p>
