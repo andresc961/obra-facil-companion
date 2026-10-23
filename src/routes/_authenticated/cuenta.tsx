@@ -3,7 +3,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
-import { Lock, Loader2, ImagePlus, Trash2 } from "lucide-react";
+import { Lock, Loader2, ImagePlus, Trash2, Building2, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAccount } from "@/hooks/use-account";
@@ -110,6 +110,10 @@ function Account() {
                 )}
                 <button onClick={manage} className="mt-3 text-sm text-primary underline">Administrar o cancelar suscripción</button>
                 {portalMsg && <p role="alert" className="mt-2 text-sm text-muted-foreground">{portalMsg}</p>}
+                <button onClick={() => document.getElementById("empresa")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-primary py-3 font-extrabold text-primary">
+                  <Pencil className="h-5 w-5" /> Editar datos de empresa
+                </button>
               </>
             ) : (
               <>
@@ -121,8 +125,9 @@ function Account() {
           ) : <Loader2 className="mt-2 h-5 w-5 animate-spin" />}
         </section>
 
-        <section className="mt-6 rounded-2xl bg-card p-5">
-          <p className="font-extrabold">Datos de tu empresa</p>
+        <section id="empresa" className="mt-6 scroll-mt-6 rounded-2xl bg-card p-5">
+          <p className="flex items-center gap-2 font-extrabold"><Building2 className="h-5 w-5 text-primary" /> Datos de tu empresa</p>
+          <p className="mt-1 text-sm text-muted-foreground">Aparecen en el PDF y el mensaje que envías a tu cliente.</p>
           {!branding && (
             <div className="mt-3 flex items-start gap-2 rounded-xl border border-primary p-3 text-sm">
               <Lock className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
