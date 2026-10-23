@@ -66,7 +66,7 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
         managed_payments: { enabled: true },
         ...(!isRecurring && { payment_intent_data: { description: productDescription } }),
         metadata: { userId, kind: isRecurring ? "subscription" : "quote_credits", quantity: String(data.quantity), managed_payments: "true" },
-        ...(isRecurring && { subscription_data: { metadata: { userId } } }),
+        ...(isRecurring && { subscription_data: { metadata: { userId } }, allow_promotion_codes: true, payment_method_collection: "always" }),
       } as Parameters<typeof stripe.checkout.sessions.create>[0]);
 
       return { clientSecret: session.client_secret ?? "" };
