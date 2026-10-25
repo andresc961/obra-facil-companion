@@ -88,7 +88,11 @@ function Index() {
             </div>
             <div className="flex h-10 flex-1 items-center gap-1">
               {Array.from({ length: 18 }).map((_, i) => (
-                <span key={i} className={`flex-1 rounded-full bg-primary ${["h-3", "h-6", "h-8", "h-4", "h-7", "h-10"][i % 6]}`} />
+                <span
+                  key={i}
+                  style={{ animationDelay: `${(i % 6) * 0.12}s` }}
+                  className={`wave-bar flex-1 rounded-full bg-primary ${["h-3", "h-6", "h-8", "h-4", "h-7", "h-10"][i % 6]}`}
+                />
               ))}
             </div>
           </div>
