@@ -78,7 +78,7 @@ function Index() {
         </>}
 
         <div className="mt-8 border-t border-border pt-6" aria-label="Ejemplo de presupuesto en inglés">
-          <p className="mb-4 flex items-center justify-between gap-3 text-xs font-bold"><span className="text-primary">UN EJEMPLO REALISTA</span><span className="text-muted-foreground">Tu voz → tu presupuesto</span></p>
+          <p className="mb-4 flex items-center justify-between gap-3 text-xs font-bold"><span className="text-primary">DE TU VOZ A UN PRESUPUESTO</span><span className="text-muted-foreground">Hablas español → presupuesto en inglés</span></p>
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Mic className="h-8 w-8" />
