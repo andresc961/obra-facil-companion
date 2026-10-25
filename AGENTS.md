@@ -22,3 +22,4 @@
 - Render the homepage workflow infographic as an accessible ordered list with HTML screen illustrations so its labels stay legible at every screen size.
 - Keep workflow animations progressive: content remains visible without JavaScript, reveals activate once on intersection, and reduced-motion disables decorative movement.
 - Use native details/summary disclosures for the homepage FAQ to keep it usable without hydration and avoid introducing a new React-dependent accordion bundle on the public entry page.
+- Keep the header-to-introduction voice graphic in a browser-safe presentation component with CSS-only motion and a reduced-motion fallback so the workflow stays readable before hydration.
