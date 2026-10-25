@@ -50,7 +50,6 @@ function Index() {
           </Button>
         ) : (
           <span className="flex shrink-0 items-center gap-2">
-            <span className="rounded-full border border-primary px-3 py-1 text-xs font-semibold text-primary">3 gratis</span>
             {ready ? (
               <Button asChild size="sm" className="rounded-full px-4 font-extrabold">
                 <Link to="/auth" search={{ modo: "entrar" }}><LogIn /> Entrar</Link>
