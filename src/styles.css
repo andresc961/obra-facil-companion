@@ -109,3 +109,37 @@
 @utility mic-pulse { animation: pulse-ring 1.6s ease-out infinite; }
 @keyframes wave { 0%,100%{transform:scaleY(.3)} 50%{transform:scaleY(1)} }
 @utility wave-bar { animation: wave 1s ease-in-out infinite; transform-origin: center; }
+
+@keyframes workflow-arrive {
+  from { transform: translateY(12px); opacity: .5; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes workflow-confirm {
+  from { transform: scale(.7); opacity: .3; }
+  to { transform: scale(1); opacity: 1; }
+}
+@keyframes workflow-send {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(3px, -3px); }
+}
+.workflow-step[data-visible] .workflow-visual {
+  animation: workflow-arrive .65s ease-out both;
+}
+.workflow-step[data-visible] .workflow-check {
+  animation: workflow-confirm .5s .25s ease-out both;
+}
+.workflow-step[data-visible] .workflow-wave {
+  animation: wave 1.4s ease-in-out infinite;
+  transform-origin: center;
+}
+.workflow-step[data-visible] .workflow-wave:nth-child(2n) { animation-delay: -.35s; }
+.workflow-step[data-visible] .workflow-wave:nth-child(3n) { animation-delay: -.7s; }
+.workflow-step[data-visible] .workflow-send {
+  animation: workflow-send 2.4s ease-in-out 3;
+}
+@media (prefers-reduced-motion: reduce) {
+  .workflow .workflow-step[data-visible] .workflow-visual,
+  .workflow .workflow-step[data-visible] .workflow-check,
+  .workflow .workflow-step[data-visible] .workflow-wave,
+  .workflow .workflow-step[data-visible] .workflow-send { animation: none; }
+}
