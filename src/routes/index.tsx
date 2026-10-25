@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Mic, FileText, MessageCircle, Check, ArrowDown, Languages, LogIn, UserRound } from "lucide-react";
+import { Mic, Check, ArrowDown, Languages, LogIn, UserRound } from "lucide-react";
 import logoIcon from "@/assets/logo-icon.png";
 import { useSessionUser } from "@/hooks/use-session-user";
+import { HowItWorks } from "@/components/HowItWorks";
 
 export const Route = createFileRoute("/")({
   staticData: { sitemap: true },
@@ -34,12 +35,6 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const { ready, user } = useSessionUser();
-  const steps = [
-    { icon: Mic, t: "Habla", d: "Di el cliente, el trabajo, materiales y tu mano de obra." },
-    { icon: Languages, t: "Escoge el idioma", d: "Español o inglés para tu cliente. Tú siempre hablas en español." },
-    { icon: FileText, t: "La IA arma el presupuesto", d: "Partidas, cantidades y totales en lenguaje profesional." },
-    { icon: MessageCircle, t: "Envía por WhatsApp", d: "Tu cliente recibe un PDF con tu nombre al instante." },
-  ];
   return (
     <main className="min-h-screen bg-background font-sans text-foreground">
       <div className="hazard h-2" />
@@ -147,17 +142,7 @@ function Index() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-xl px-5 py-10">
-        <h2 className="font-display text-2xl">Así de fácil</h2>
-        <ol className="mt-6 space-y-4">
-          {steps.map((s, i) => (
-            <li key={s.t} className="flex gap-4 rounded-xl border border-border bg-card p-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary font-display text-xl text-primary-foreground">{i + 1}</div>
-              <div><p className="font-extrabold">{s.t}</p><p className="text-sm text-muted-foreground">{s.d}</p></div>
-            </li>
-          ))}
-        </ol>
-      </section>
+      <HowItWorks />
 
       <section className="mx-auto max-w-xl px-5 py-10">
         <h2 className="font-display text-2xl">Precios simples</h2>

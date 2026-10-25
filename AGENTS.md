@@ -19,3 +19,4 @@
 - The sitemap derives public URLs from required route staticData.sitemap decisions; exclude the authenticated subtree and utility routes to keep customer surfaces out of discovery. Use authoritative page-specific lastmod timestamps only, otherwise omit them.
 - /probar is a public, account-free single quote preview via generateDemoQuote (never consumes quota or saves); one try per browser keeps AI cost low.
 - Keep the visitor preview and recorder sample in one browser-safe module so both demonstrate the same scenario without importing server logic.
+- Render the homepage workflow infographic as an accessible ordered list with HTML screen illustrations so its labels stay legible at every screen size.
