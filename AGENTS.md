@@ -20,3 +20,4 @@
 - /probar is a public, account-free single quote preview via generateDemoQuote (never consumes quota or saves); one try per browser keeps AI cost low.
 - Keep the visitor preview and recorder sample in one browser-safe module so both demonstrate the same scenario without importing server logic.
 - Render the homepage workflow infographic as an accessible ordered list with HTML screen illustrations so its labels stay legible at every screen size.
+- Use native details/summary disclosures for the homepage FAQ to keep it usable without hydration and avoid introducing a new React-dependent accordion bundle on the public entry page.

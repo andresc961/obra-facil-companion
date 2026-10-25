@@ -1,10 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Mic, Check, Languages, LogIn, UserRound, ShieldCheck, ArrowRight } from "lucide-react";
+import { Mic, Check, Languages, LogIn, UserRound, ShieldCheck, ArrowRight, ChevronDown } from "lucide-react";
 import logoIcon from "@/assets/logo-icon.png";
 import { useSessionUser } from "@/hooks/use-session-user";
 import { HowItWorks } from "@/components/HowItWorks";
 import { Button } from "@/components/ui/button";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export const Route = createFileRoute("/")({
   staticData: { sitemap: true },
@@ -146,20 +145,22 @@ function Index() {
       <section className="border-t border-border px-5 py-10" aria-labelledby="homepage-questions">
         <div className="mx-auto max-w-xl">
           <h2 id="homepage-questions" className="font-display text-2xl">Antes de empezar</h2>
-          <Accordion type="single" collapsible className="mt-5">
+          <div className="mt-5">
             {[
               ["¿Qué puedo probar gratis?", "Sin cuenta ni tarjeta, puedes crear un presupuesto de prueba y ver el resultado. Después, crea tu cuenta para descargar el PDF y enviarlo. Tu cuenta incluye 3 presupuestos gratis; la prueba no los consume."],
               ["¿Puedo corregir precios o agregar trabajos?", "Sí. Con tu cuenta puedes editar las partidas, cantidades, precios y notas antes de descargar o enviar el presupuesto. Corregirlo no consume otro presupuesto."],
               ["¿Tengo que hablar inglés?", "No. Habla en español y elige español o inglés para el presupuesto, el PDF y el mensaje de tu cliente."],
               ["¿Mi cliente necesita instalar la app?", "No. Tu cliente recibe un PDF y un mensaje que puede abrir sin tener una cuenta en ObraFácil."],
               ["¿Puedo poner el logo de mi empresa?", "Sí. El Plan Maestro de $10 al mes incluye presupuestos ilimitados y la opción de añadir el nombre, logo y contacto de tu empresa."],
-            ].map(([question, answer], index) => (
-              <AccordionItem key={question} value={`question-${index}`}>
-                <AccordionTrigger className="gap-4 py-5 text-base font-semibold">{question}</AccordionTrigger>
-                <AccordionContent className="leading-relaxed text-muted-foreground">{answer}</AccordionContent>
-              </AccordionItem>
+            ].map(([question, answer]) => (
+              <details key={question} name="homepage-faq" className="group border-b border-border">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-base font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+                  {question}<ChevronDown aria-hidden="true" className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180 motion-reduce:transition-none" />
+                </summary>
+                <p className="pb-5 text-sm leading-relaxed text-muted-foreground">{answer}</p>
+              </details>
             ))}
-          </Accordion>
+          </div>
         </div>
       </section>
 
