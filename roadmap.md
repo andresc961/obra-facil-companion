@@ -4,3 +4,6 @@
 - [x] Improve public search metadata and structured data.
 - [x] Add a router-derived sitemap excluding accounts and checkout.
 - [x] Verify rendered search tags and sitemap behavior.
+- [ ] Move homepage trial action above the example and simplify repeated bilingual content.
+- [ ] Clarify the free offer, add common questions, and repeat the trial action after pricing.
+- [ ] Verify homepage navigation and layout on phone and desktop.

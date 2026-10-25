@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Mic, Check, ArrowDown, Languages, LogIn, UserRound } from "lucide-react";
+import { Mic, Check, Languages, LogIn, UserRound, ShieldCheck, ArrowRight } from "lucide-react";
 import logoIcon from "@/assets/logo-icon.png";
 import { useSessionUser } from "@/hooks/use-session-user";
 import { HowItWorks } from "@/components/HowItWorks";
+import { Button } from "@/components/ui/button";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export const Route = createFileRoute("/")({
   staticData: { sitemap: true },
@@ -44,16 +46,16 @@ function Index() {
           <span className="font-display text-xl text-primary">ObraFácil</span>
         </span>
         {user ? (
-          <Link to="/cuenta" className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-bold">
-            <UserRound className="h-4 w-4 text-primary" /> Mi cuenta
-          </Link>
+          <Button asChild variant="outline" size="sm" className="shrink-0 rounded-full bg-card font-bold">
+            <Link to="/cuenta"><UserRound className="text-primary" /> Mi cuenta</Link>
+          </Button>
         ) : (
           <span className="flex shrink-0 items-center gap-2">
             <span className="rounded-full border border-primary px-3 py-1 text-xs font-semibold text-primary">3 gratis</span>
             {ready ? (
-              <Link to="/auth" search={{ modo: "entrar" }} className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-1.5 text-xs font-extrabold text-primary-foreground">
-                <LogIn className="h-4 w-4" /> Entrar
-              </Link>
+              <Button asChild size="sm" className="rounded-full px-4 font-extrabold">
+                <Link to="/auth" search={{ modo: "entrar" }}><LogIn /> Entrar</Link>
+              </Button>
             ) : (
               <span className="h-8 w-24 rounded-full bg-card" aria-hidden="true" />
             )}
@@ -68,21 +70,31 @@ function Index() {
         <h1 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
           Habla a tu teléfono. <span className="text-primary">Envía tu presupuesto</span> por Mensaje en 30 segundos.
         </h1>
-        <p className="mt-4 text-lg text-muted-foreground">Para contratistas y maestros de obra. Habla en español como siempre — el presupuesto y el mensaje salen en inglés si tu cliente lo necesita.</p>
+        <p className="mt-4 text-lg text-muted-foreground">Habla en español y crea un presupuesto profesional en español o inglés.</p>
 
-        <div className="mt-8 rounded-2xl border border-border bg-card p-5">
+        <Button asChild className="mt-6 h-auto min-h-14 w-full whitespace-normal px-4 py-4 text-base font-extrabold sm:text-lg">
+          <Link to={user ? "/grabar" : "/probar"}><Mic /> {user ? "Crear mi presupuesto por voz" : "Pruébalo gratis — sin cuenta"}</Link>
+        </Button>
+        {!user && <>
+          <p className="mt-3 flex items-center justify-center gap-2 text-sm text-muted-foreground"><ShieldCheck className="h-4 w-4 shrink-0 text-accent" /> Prueba sin cuenta ni tarjeta.</p>
+          <p className="mt-1 text-center text-xs text-muted-foreground">Al crear tu cuenta, tienes 3 presupuestos gratis.</p>
+          {ready && <Button asChild variant="link" className="mx-auto mt-1 flex h-9 w-fit text-sm"><Link to="/auth" search={{ modo: "entrar" }}>Ya tengo cuenta — Entrar</Link></Button>}
+        </>}
+
+        <div className="mt-8 border-t border-border pt-6" aria-label="Ejemplo de presupuesto en inglés">
+          <p className="mb-4 flex items-center justify-between gap-3 text-xs font-bold"><span className="text-primary">UN EJEMPLO REALISTA</span><span className="text-muted-foreground">Tu voz → tu presupuesto</span></p>
           <div className="flex items-center gap-4">
-            <div className="mic-pulse flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Mic className="h-8 w-8" />
             </div>
             <div className="flex h-10 flex-1 items-center gap-1">
               {Array.from({ length: 18 }).map((_, i) => (
-                <span key={i} className="wave-bar h-full flex-1 rounded-full bg-primary" style={{ animationDelay: `${(i % 6) * 0.12}s` }} />
+                <span key={i} className={`flex-1 rounded-full bg-primary ${["h-3", "h-6", "h-8", "h-4", "h-7", "h-10"][i % 6]}`} />
               ))}
             </div>
           </div>
           <p className="mt-4 text-sm italic text-muted-foreground">"Para Doña Martha: 12 paneles de chirrock a $25, otros materiales $200. Tumbar pared $300, instalar chirrock $650… no, mejor $700. Resanar y pintar $400. Tres días, 50% de anticipo."</p>
-          <div className="mt-4 rounded-xl bg-paper p-4 text-paper-foreground">
+          <div className="mt-4 rounded-lg bg-paper p-4 text-paper-foreground">
             <div className="flex justify-between text-xs font-semibold opacity-60"><span>OF-1001</span><span>Mrs. Martha</span></div>
             <p className="mt-2 text-sm font-semibold">Living Room Remodeling</p>
             <div className="mt-2 space-y-1 text-sm">
@@ -94,51 +106,12 @@ function Index() {
             </div>
             <div className="mt-3 flex justify-between border-t border-paper-foreground/20 pt-2 text-lg font-extrabold"><span>Total</span><span>$1,900</span></div>
             <p className="mt-2 text-xs opacity-70">3-day project · 50% deposit, balance on completion.</p>
-          </div>
-        </div>
-
-        <Link to={user ? "/grabar" : "/probar"} className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-4 text-lg font-extrabold text-primary-foreground"><Mic className="h-6 w-6" /> {user ? "Crear mi presupuesto por voz" : "Pruébalo gratis — sin cuenta"}</Link>
-        {!user && (ready ? (
-          <Link to="/auth" search={{ modo: "entrar" }} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-primary bg-card px-6 py-3.5 font-extrabold text-primary">
-            <LogIn className="h-5 w-5" /> Ya tengo cuenta — Entrar
-          </Link>
-        ) : (
-          <span className="mt-3 block h-14 rounded-xl bg-card" aria-hidden="true" />
-        ))}
-        <p className="mt-3 text-center text-sm text-muted-foreground">Tus primeros 3 presupuestos son gratis.</p>
-      </section>
-
-      <section className="mx-auto max-w-xl px-5 py-10">
-        <div className="rounded-2xl border-2 border-primary bg-card p-6">
-          <h2 className="font-display text-2xl leading-tight">Habla en español. <span className="text-primary">Tu cliente lo recibe en inglés.</span></h2>
-          <p className="mt-3 text-muted-foreground">Tú dictas como siempre, sin escribir y sin traductores. El presupuesto, el PDF y el mensaje de WhatsApp salen en inglés — o en español. Tú escoges con un toque.</p>
-
-          <div className="mt-6 space-y-3">
-            <div className="rounded-xl border border-primary/50 bg-secondary p-4">
-              <p className="text-xs font-bold uppercase tracking-wide text-primary">🇲🇽 Tú dices</p>
-              <p className="mt-2 text-sm italic">"Doña Martha, remodelar la sala con chirrock y pintura blanca. El trabajo toma 3 días y pido la mitad de anticipo, el resto al terminar."</p>
-            </div>
-            <div className="flex justify-center">
-              <ArrowDown className="h-5 w-5 text-primary" />
-            </div>
-            <div className="rounded-xl bg-paper p-4 text-paper-foreground">
-              <p className="text-xs font-bold uppercase tracking-wide">🇺🇸 Tu cliente recibe</p>
-              <p className="mt-2 text-sm font-semibold">Living Room Remodeling — Mrs. Martha</p>
-              <p className="mt-2 text-sm">Demolition of a non-load-bearing partition wall, drywall installation, patching and white paint. Debris removal included.</p>
-              <p className="mt-2 text-xs opacity-70">Estimated duration: 3 days. Payment: 50% deposit; remaining balance upon completion.</p>
-              <div className="mt-3 border-t border-paper-foreground/20 pt-3">
-                <p className="text-xs font-semibold opacity-60">Message to Mrs. Martha</p>
-                <p className="mt-2 text-sm">Hi Mrs. Martha, here is your living room remodeling estimate for $1,900. Please review the scope and payment terms and let me know if you’d like to proceed. Thank you!</p>
-              </div>
+            <div className="mt-4 border-t border-paper-foreground/20 pt-3">
+              <p className="text-xs font-semibold opacity-60">Mensaje para tu cliente · English</p>
+              <p className="mt-2 text-sm">Hi Mrs. Martha, here is your living room remodeling estimate for $1,900. Please review the scope and payment terms and let me know if you’d like to proceed. Thank you!</p>
             </div>
           </div>
-
-          <div className="mt-5 flex flex-wrap items-center gap-2 text-xs font-bold">
-            <span className="rounded-full border border-border px-3 py-1 text-muted-foreground">🇲🇽 Presupuesto en español</span>
-            <span className="text-muted-foreground">o</span>
-            <span className="rounded-full border border-primary bg-primary/10 px-3 py-1 text-primary">🇺🇸 Quote in English</span>
-          </div>
-          <p className="mt-4 text-sm text-muted-foreground">Ideal cuando tu cliente o el que paga habla inglés. Tú no cambias nada.</p>
+          <p className="mt-3 text-sm text-muted-foreground">Tú eliges el idioma y revisas los precios antes de enviarlo.</p>
         </div>
       </section>
 
@@ -148,11 +121,11 @@ function Index() {
         <h2 className="font-display text-2xl">Precios simples</h2>
         <p className="mt-2 text-muted-foreground">Tus primeros 3 presupuestos son gratis. Después tú escoges:</p>
         <div className="mt-6 space-y-4">
-          <div className="rounded-2xl border border-border bg-card p-6">
+          <div className="rounded-lg border border-border bg-card p-6">
             <p className="text-sm font-semibold text-muted-foreground">Paga solo lo que uses</p>
             <p className="mt-2 font-display text-4xl">$1<span className="font-sans text-base text-muted-foreground">/presupuesto</span></p>
           </div>
-          <div className="rounded-2xl border-2 border-primary bg-card p-6">
+          <div className="rounded-lg border-2 border-primary bg-card p-6">
             <p className="text-sm font-semibold text-primary">⭐ Plan Maestro</p>
             <p className="mt-2 font-display text-4xl">$10<span className="font-sans text-base text-muted-foreground">/mes</span></p>
             <ul className="mt-5 space-y-2">
@@ -161,6 +134,32 @@ function Index() {
               ))}
             </ul>
           </div>
+        </div>
+        <div className="mt-8 text-center">
+          <Button asChild className="h-auto min-h-14 w-full whitespace-normal px-4 py-4 text-base font-extrabold">
+            <Link to={user ? "/grabar" : "/probar"}>{user ? "Crear mi presupuesto por voz" : "Pruébalo gratis — sin cuenta"}<ArrowRight /></Link>
+          </Button>
+          {!user && <p className="mt-3 text-sm text-muted-foreground">Una prueba sin cuenta ni tarjeta. Regístrate para descargar el PDF y enviarlo.</p>}
+        </div>
+      </section>
+
+      <section className="border-t border-border px-5 py-10" aria-labelledby="homepage-questions">
+        <div className="mx-auto max-w-xl">
+          <h2 id="homepage-questions" className="font-display text-2xl">Antes de empezar</h2>
+          <Accordion type="single" collapsible className="mt-5">
+            {[
+              ["¿Qué puedo probar gratis?", "Sin cuenta ni tarjeta, puedes crear un presupuesto de prueba y ver el resultado. Después, crea tu cuenta para descargar el PDF y enviarlo. Tu cuenta incluye 3 presupuestos gratis; la prueba no los consume."],
+              ["¿Puedo corregir precios o agregar trabajos?", "Sí. Con tu cuenta puedes editar las partidas, cantidades, precios y notas antes de descargar o enviar el presupuesto. Corregirlo no consume otro presupuesto."],
+              ["¿Tengo que hablar inglés?", "No. Habla en español y elige español o inglés para el presupuesto, el PDF y el mensaje de tu cliente."],
+              ["¿Mi cliente necesita instalar la app?", "No. Tu cliente recibe un PDF y un mensaje que puede abrir sin tener una cuenta en ObraFácil."],
+              ["¿Puedo poner el logo de mi empresa?", "Sí. El Plan Maestro de $10 al mes incluye presupuestos ilimitados y la opción de añadir el nombre, logo y contacto de tu empresa."],
+            ].map(([question, answer], index) => (
+              <AccordionItem key={question} value={`question-${index}`}>
+                <AccordionTrigger className="gap-4 py-5 text-base font-semibold">{question}</AccordionTrigger>
+                <AccordionContent className="leading-relaxed text-muted-foreground">{answer}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </section>
 
