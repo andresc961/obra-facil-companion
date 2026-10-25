@@ -39,7 +39,6 @@ function Index() {
     { icon: Languages, t: "Escoge el idioma", d: "Español o inglés para tu cliente. Tú siempre hablas en español." },
     { icon: FileText, t: "La IA arma el presupuesto", d: "Partidas, cantidades y totales en lenguaje profesional." },
     { icon: MessageCircle, t: "Envía por WhatsApp", d: "Tu cliente recibe un PDF con tu nombre al instante." },
-    { icon: t: "El cliente firma", d: "Aprueba con su dedo desde el teléfono y te avisamos." },
   ];
   return (
     <main className="min-h-screen bg-background font-sans text-foreground">
