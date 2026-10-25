@@ -7,4 +7,4 @@
 - [x] Move homepage trial action above the example and simplify repeated bilingual content.
 - [x] Clarify the free offer, add common questions, and repeat the trial action after pricing.
 - [x] Verify homepage navigation and layout on phone and desktop.
-- [ ] Simplify the mobile walkthrough and verify readable steps and reduced-motion-friendly animations.
+- [x] Simplify the mobile walkthrough and verify readable steps and reduced-motion-friendly animations.
