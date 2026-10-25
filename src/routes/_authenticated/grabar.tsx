@@ -55,6 +55,10 @@ function Recorder() {
   const recRef = useRef<Awaited<ReturnType<typeof recordWav>> | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  useEffect(() => {
+    const demo = localStorage.getItem("obrafacil-demo-text");
+    if (demo) { setText(demo); localStorage.removeItem("obrafacil-demo-text"); }
+  }, []);
   useEffect(() => () => { recRef.current?.cancel(); if (timerRef.current) clearInterval(timerRef.current); }, []);
 
   const generate = async (transcript = text) => {

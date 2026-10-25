@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Mic, FileText, MessageCircle, PenLine, Check, ArrowDown, Languages, LogIn, UserRound } from "lucide-react";
+import { Mic, FileText, MessageCircle, Check, ArrowDown, Languages, LogIn, UserRound } from "lucide-react";
 import logoIcon from "@/assets/logo-icon.png";
 import { useSessionUser } from "@/hooks/use-session-user";
 
@@ -39,7 +39,6 @@ function Index() {
     { icon: Languages, t: "Escoge el idioma", d: "Español o inglés para tu cliente. Tú siempre hablas en español." },
     { icon: FileText, t: "La IA arma el presupuesto", d: "Partidas, cantidades y totales en lenguaje profesional." },
     { icon: MessageCircle, t: "Envía por WhatsApp", d: "Tu cliente recibe un PDF con tu nombre al instante." },
-    { icon: PenLine, t: "El cliente firma", d: "Aprueba con su dedo desde el teléfono y te avisamos." },
   ];
   return (
     <main className="min-h-screen bg-background font-sans text-foreground">
@@ -99,7 +98,7 @@ function Index() {
           </div>
         </div>
 
-        <Link to="/grabar" className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-4 text-lg font-extrabold text-primary-foreground"><Mic className="h-6 w-6" /> Crear mi presupuesto por voz</Link>
+        <Link to={user ? "/grabar" : "/probar"} className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-4 text-lg font-extrabold text-primary-foreground"><Mic className="h-6 w-6" /> {user ? "Crear mi presupuesto por voz" : "Pruébalo gratis — sin cuenta"}</Link>
         {!user && (ready ? (
           <Link to="/auth" search={{ modo: "entrar" }} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-primary bg-card px-6 py-3.5 font-extrabold text-primary">
             <LogIn className="h-5 w-5" /> Ya tengo cuenta — Entrar
