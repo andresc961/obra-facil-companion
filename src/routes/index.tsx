@@ -3,7 +3,6 @@ import { Mic, Check, LogIn, UserRound, ShieldCheck, ArrowRight, ChevronDown } fr
 import logoIcon from "@/assets/logo-icon.png";
 import { useSessionUser } from "@/hooks/use-session-user";
 import { HowItWorks } from "@/components/HowItWorks";
-import { VoiceToQuoteGraphic } from "@/components/VoiceToQuoteGraphic";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
@@ -61,8 +60,6 @@ function Index() {
           </span>
         )}
       </header>
-
-      <VoiceToQuoteGraphic />
 
       <section className="mx-auto max-w-xl px-5 pb-10 pt-4">
         <h1 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">

@@ -8,4 +8,3 @@
 - [x] Clarify the free offer, add common questions, and repeat the trial action after pricing.
 - [x] Verify homepage navigation and layout on phone and desktop.
 - [x] Simplify the mobile walkthrough and verify readable steps and reduced-motion-friendly animations.
-- [x] Add and verify a branded animated voice-to-quote graphic between the homepage header and introduction.
