@@ -14,6 +14,7 @@ import { getStripeEnvironment } from "@/lib/stripe";
 import { canCreateQuote, canUseBranding, freeLeft } from "@/lib/pricing";
 import { generateEnglishQuote, type Quote } from "@/lib/quote.functions";
 import { recordWav } from "@/lib/record-wav";
+import { QUOTE_EXAMPLE } from "@/lib/quote-example";
 
 
 export const Route = createFileRoute("/_authenticated/grabar")({
@@ -31,10 +32,6 @@ export const Route = createFileRoute("/_authenticated/grabar")({
   }),
   component: Recorder,
 });
-
-const PRESETS = [
-  "Doña Martha: tumbar pared divisoria, poner chirrock con perfiles y pintura blanca. Materiales $500, mano de obra $900.",
-];
 
 function Recorder() {
   const [text, setText] = useState("");
@@ -162,11 +159,11 @@ function Recorder() {
           className="w-full rounded-xl border border-border bg-card p-4 text-base outline-none focus:border-primary" />
 
         <div className="mt-3 flex flex-col gap-2">
-          {PRESETS.map((p, i) => (
-            <button key={i} onClick={() => setText(p)} className="rounded-lg border border-border bg-card px-3 py-2 text-left text-sm text-muted-foreground">
-              Ejemplo {i + 1}: {p.slice(0, 48)}…
-            </button>
-          ))}
+          <Button variant="outline" onClick={() => setText(QUOTE_EXAMPLE.transcript)} disabled={busy || listening}
+            className="h-auto w-full justify-start whitespace-normal rounded-lg bg-card px-3 py-3 text-left">
+            <span><span className="block font-semibold">Usar ejemplo: {QUOTE_EXAMPLE.title}</span>
+              <span className="mt-1 block text-xs text-muted-foreground">Materiales, mano de obra, plazo y anticipo</span></span>
+          </Button>
         </div>
 
         <button onClick={() => generate()} disabled={busy || listening || text.trim().length < 5}

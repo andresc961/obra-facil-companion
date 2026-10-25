@@ -86,15 +86,19 @@ function Index() {
               ))}
             </div>
           </div>
-          <p className="mt-4 text-sm italic text-muted-foreground">"Doña Martha: tumbar pared, poner chirrock y pintura blanca. Materiales $500, mano de obra $900."</p>
+          <p className="mt-4 text-sm italic text-muted-foreground">"Para Doña Martha: 12 paneles de chirrock a $25, otros materiales $200. Tumbar pared $300, instalar chirrock $650… no, mejor $700. Resanar y pintar $400. Tres días, 50% de anticipo."</p>
           <div className="mt-4 rounded-xl bg-paper p-4 text-paper-foreground">
             <div className="flex justify-between text-xs font-semibold opacity-60"><span>OF-1001</span><span>Mrs. Martha</span></div>
-            <p className="mt-2 text-sm font-semibold">Wall Demolition and Drywall Installation</p>
+            <p className="mt-2 text-sm font-semibold">Living Room Remodeling</p>
             <div className="mt-2 space-y-1 text-sm">
-              <div className="flex justify-between"><span>Materials (panels, framing, paint)</span><span>$500</span></div>
-              <div className="flex justify-between"><span>Labor</span><span>$900</span></div>
+              <div className="flex justify-between gap-3"><span>Drywall panels · 12 × $25</span><span className="shrink-0">$300</span></div>
+              <div className="flex justify-between gap-3"><span>Paint and other materials</span><span className="shrink-0">$200</span></div>
+              <div className="flex justify-between gap-3"><span>Partition wall demolition</span><span className="shrink-0">$300</span></div>
+              <div className="flex justify-between gap-3"><span>Drywall installation</span><span className="shrink-0">$700</span></div>
+              <div className="flex justify-between gap-3"><span>Patching and painting</span><span className="shrink-0">$400</span></div>
             </div>
-            <div className="mt-3 flex justify-between border-t border-paper-foreground/20 pt-2 text-lg font-extrabold"><span>Total</span><span>$1,400</span></div>
+            <div className="mt-3 flex justify-between border-t border-paper-foreground/20 pt-2 text-lg font-extrabold"><span>Total</span><span>$1,900</span></div>
+            <p className="mt-2 text-xs opacity-70">3-day project · 50% deposit, balance on completion.</p>
           </div>
         </div>
 
@@ -117,19 +121,20 @@ function Index() {
           <div className="mt-6 space-y-3">
             <div className="rounded-xl border border-primary/50 bg-secondary p-4">
               <p className="text-xs font-bold uppercase tracking-wide text-primary">🇲🇽 Tú dices</p>
-              <p className="mt-2 text-sm italic">"Doña Martha: tumbar pared, poner chirrock y pintura blanca."</p>
+              <p className="mt-2 text-sm italic">"Doña Martha, remodelar la sala con chirrock y pintura blanca. El trabajo toma 3 días y pido la mitad de anticipo, el resto al terminar."</p>
             </div>
             <div className="flex justify-center">
               <ArrowDown className="h-5 w-5 text-primary" />
             </div>
             <div className="rounded-xl bg-paper p-4 text-paper-foreground">
               <p className="text-xs font-bold uppercase tracking-wide">🇺🇸 Tu cliente recibe</p>
-              <p className="mt-2 text-sm font-semibold">Drywall Installation — Mrs. Martha</p>
-              <div className="mt-2 space-y-1 text-sm">
-                <div className="flex justify-between"><span>Materials (panels, framing, paint)</span><span>$500</span></div>
-                <div className="flex justify-between"><span>Labor</span><span>$900</span></div>
+              <p className="mt-2 text-sm font-semibold">Living Room Remodeling — Mrs. Martha</p>
+              <p className="mt-2 text-sm">Demolition of a non-load-bearing partition wall, drywall installation, patching and white paint. Debris removal included.</p>
+              <p className="mt-2 text-xs opacity-70">Estimated duration: 3 days. Payment: 50% deposit; remaining balance upon completion.</p>
+              <div className="mt-3 border-t border-paper-foreground/20 pt-3">
+                <p className="text-xs font-semibold opacity-60">Message to Mrs. Martha</p>
+                <p className="mt-2 text-sm">Hi Mrs. Martha, here is your living room remodeling estimate for $1,900. Please review the scope and payment terms and let me know if you’d like to proceed. Thank you!</p>
               </div>
-              <div className="mt-3 flex justify-between border-t border-paper-foreground/20 pt-2 text-lg font-extrabold"><span>Total</span><span>$1,400</span></div>
             </div>
           </div>
 

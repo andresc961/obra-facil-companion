@@ -5,6 +5,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { AppHeader } from "@/components/AppHeader";
 import { generateDemoQuote, type Quote } from "@/lib/quote.functions";
 import { recordWav } from "@/lib/record-wav";
+import { Button } from "@/components/ui/button";
+import { QUOTE_EXAMPLE } from "@/lib/quote-example";
 
 const USED_KEY = "obrafacil-demo-used";
 
@@ -23,8 +25,6 @@ export const Route = createFileRoute("/probar")({
   }),
   component: TryPage,
 });
-
-const EXAMPLE = "Doña Martha: tumbar pared divisoria, poner chirrock con perfiles y pintura blanca. Materiales $500, mano de obra $900.";
 
 function TryPage() {
   const gen = useServerFn(generateDemoQuote);
@@ -105,7 +105,11 @@ function TryPage() {
             </div>
             <textarea value={text} onChange={(e) => setText(e.target.value)} rows={3} maxLength={1200} placeholder="O escribe aquí…"
               className="w-full rounded-xl border border-border bg-card p-4 outline-none focus:border-primary" />
-            <button onClick={() => setText(EXAMPLE)} className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2 text-left text-sm text-muted-foreground">Usar ejemplo: {EXAMPLE.slice(0, 44)}…</button>
+            <Button variant="outline" onClick={() => setText(QUOTE_EXAMPLE.transcript)} disabled={!!busy || listening}
+              className="mt-2 h-auto w-full justify-start whitespace-normal rounded-lg bg-card px-3 py-3 text-left">
+              <span><span className="block font-semibold">Usar ejemplo: {QUOTE_EXAMPLE.title}</span>
+                <span className="mt-1 block text-xs text-muted-foreground">Materiales, mano de obra, plazo y anticipo</span></span>
+            </Button>
             <button onClick={() => generate()} disabled={!!busy || listening || text.trim().length < 5}
               className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 text-lg font-extrabold text-primary-foreground disabled:opacity-50">
               {busy === "quote" ? <><Loader2 className="h-5 w-5 animate-spin" /> Armando…</> : "Ver mi presupuesto"}
@@ -121,11 +125,15 @@ function TryPage() {
               <p className="mt-1 text-lg font-extrabold">{quote.project_title}</p>
               <div className="mt-3 space-y-2 text-sm">
                 {quote.items.map((i, k) => (
-                  <div key={k} className="flex justify-between gap-3"><span>{i.description}</span><span className="shrink-0 font-semibold">{fmt(i.total)}</span></div>
+                   <div key={k} className="flex justify-between gap-3"><span>{i.description}{i.qty !== 1 && <span className="block text-xs opacity-70">{i.qty} × {fmt(i.unit_price)}</span>}</span><span className="shrink-0 font-semibold">{fmt(i.total)}</span></div>
                 ))}
               </div>
               <div className="mt-3 flex justify-between border-t border-paper-foreground/20 pt-2 text-xl font-extrabold"><span>Total</span><span>{fmt(total)}</span></div>
               {quote.notes && <p className="mt-3 text-xs opacity-70">{quote.notes}</p>}
+            </div>
+            <div className="border-b border-border pb-4">
+              <p className="text-xs font-semibold text-muted-foreground">Mensaje para tu cliente ({lang === "en" ? "inglés" : "español"})</p>
+              <p className="mt-2 whitespace-pre-wrap text-sm">{quote.whatsapp_message}</p>
             </div>
             <div className="rounded-2xl border-2 border-primary bg-card p-5">
               <p className="flex items-center gap-2 font-display text-xl"><Lock className="h-5 w-5 text-primary" /> Guárdalo y envíaselo a tu cliente</p>
