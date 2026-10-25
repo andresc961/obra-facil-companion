@@ -73,7 +73,6 @@ function Index() {
         </Button>
         {!user && <>
           <p className="mt-3 flex items-center justify-center gap-2 text-sm text-muted-foreground"><ShieldCheck className="h-4 w-4 shrink-0 text-accent" /> Prueba sin cuenta ni tarjeta.</p>
-          <p className="mt-1 text-center text-xs text-muted-foreground">Al crear tu cuenta, tienes 3 presupuestos gratis.</p>
           {ready && <Button asChild variant="link" className="mx-auto mt-1 flex h-9 w-fit text-sm"><Link to="/auth" search={{ modo: "entrar" }}>Ya tengo cuenta — Entrar</Link></Button>}
         </>}
 
