@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ProbarRouteImport } from './routes/probar'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthenticatedCuentaRouteImport } from './routes/_authenticated/cuenta'
 import { Route as AuthenticatedGrabarRouteImport } from './routes/_authenticated/grabar'
@@ -32,6 +33,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProbarRoute = ProbarRouteImport.update({
+  id: '/probar',
+  path: '/probar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -74,6 +80,7 @@ const ApiPublicPaymentsWebhookRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/probar': typeof ProbarRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/cuenta': typeof AuthenticatedCuentaRoute
   '/grabar': typeof AuthenticatedGrabarRoute
@@ -85,6 +92,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/probar': typeof ProbarRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/cuenta': typeof AuthenticatedCuentaRoute
   '/grabar': typeof AuthenticatedGrabarRoute
@@ -98,6 +106,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/probar': typeof ProbarRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/cuenta': typeof AuthenticatedCuentaRoute
   '/_authenticated/grabar': typeof AuthenticatedGrabarRoute
@@ -111,6 +120,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/probar'
     | '/sitemap.xml'
     | '/cuenta'
     | '/grabar'
@@ -122,6 +132,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/probar'
     | '/sitemap.xml'
     | '/cuenta'
     | '/grabar'
@@ -134,6 +145,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/probar'
     | '/sitemap.xml'
     | '/_authenticated/cuenta'
     | '/_authenticated/grabar'
@@ -147,6 +159,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ProbarRoute: typeof ProbarRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiTranscribeRoute: typeof ApiTranscribeRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
@@ -174,6 +187,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/probar': {
+      id: '/probar'
+      path: '/probar'
+      fullPath: '/probar'
+      preLoaderRoute: typeof ProbarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -247,6 +267,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ProbarRoute: ProbarRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiTranscribeRoute: ApiTranscribeRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
