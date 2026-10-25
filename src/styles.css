@@ -132,14 +132,14 @@
   animation: wave 1.4s ease-in-out infinite;
   transform-origin: center;
 }
-.workflow-wave:nth-child(2n) { animation-delay: -.35s; }
-.workflow-wave:nth-child(3n) { animation-delay: -.7s; }
+.workflow-step[data-visible] .workflow-wave:nth-child(2n) { animation-delay: -.35s; }
+.workflow-step[data-visible] .workflow-wave:nth-child(3n) { animation-delay: -.7s; }
 .workflow-step[data-visible] .workflow-send {
   animation: workflow-send 2.4s ease-in-out 3;
 }
 @media (prefers-reduced-motion: reduce) {
-  .workflow .workflow-visual,
-  .workflow .workflow-check,
-  .workflow .workflow-wave,
-  .workflow .workflow-send { animation: none; }
+  .workflow .workflow-step[data-visible] .workflow-visual,
+  .workflow .workflow-step[data-visible] .workflow-check,
+  .workflow .workflow-step[data-visible] .workflow-wave,
+  .workflow .workflow-step[data-visible] .workflow-send { animation: none; }
 }
