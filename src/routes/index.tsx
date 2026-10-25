@@ -63,9 +63,6 @@ function Index() {
       </header>
 
       <section className="mx-auto max-w-xl px-5 pb-10 pt-4">
-        <span className="inline-flex items-center gap-2 rounded-full border border-primary/60 bg-card px-3 py-1 text-xs font-bold text-primary">
-          <Languages className="h-4 w-4" /> Hablas español · tu cliente lo recibe en inglés
-        </span>
         <h1 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
           Habla a tu teléfono. <span className="text-primary">Envía tu presupuesto</span> por Mensaje en 30 segundos.
         </h1>
