@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Mic, Check, Languages, LogIn, UserRound, ShieldCheck, ArrowRight, ChevronDown } from "lucide-react";
+import { Mic, Check, LogIn, UserRound, ShieldCheck, ArrowRight, ChevronDown } from "lucide-react";
 import logoIcon from "@/assets/logo-icon.png";
 import { useSessionUser } from "@/hooks/use-session-user";
 import { HowItWorks } from "@/components/HowItWorks";
