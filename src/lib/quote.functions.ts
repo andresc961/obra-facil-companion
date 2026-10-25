@@ -25,20 +25,7 @@ Rules:
 6. whatsapp_message: a short, warm, professional {LANG} WhatsApp message from the contractor to the client presenting the estimate with the total in USD, asking them to review and approve.
 Write every output field in {LANG} only (proper names excepted).`;
 
-export const generateEnglishQuote = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((input) => z.object({ transcript: z.string().min(5).max(4000), language: z.enum(["en", "es"]), environment: z.enum(["sandbox", "live"]) }).parse(input))
-  .handler(async ({ data, context }) => {
-    const apiKey = process.env["LOVABLE_API_KEY"];
-    if (!apiKey) throw new Error("AI is not configured.");
-    const { supabase, userId } = context;
-    const [{ data: usage }, { data: subscribed }] = await Promise.all([
-      supabase.from("quote_usage").select("free_used, paid_credits").eq("user_id", userId).eq("environment", data.environment).maybeSingle(),
-      supabase.rpc("has_active_subscription", { user_uuid: userId, check_env: data.environment }),
-    ]);
-    if (!canCreateQuote({ subscribed: !!subscribed, freeUsed: usage?.free_used ?? 0, paidCredits: usage?.paid_credits ?? 0 })) {
-      return { ok: false as const, needsPayment: true as const, error: "Ya usaste tus 3 presupuestos gratis. Paga $1 por presupuesto o activa el Plan Maestro." };
-    }
+async function runQuoteAI(transcript: string, language: "en" | "es", apiKey: string) {
     const { createOpenAI } = await import("@ai-sdk/openai");
     const { streamText, Output, NoObjectGeneratedError } = await import("ai");
 
@@ -58,8 +45,8 @@ export const generateEnglishQuote = createServerFn({ method: "POST" })
 
     const result = streamText({
       model: provider.responses("openai/gpt-6-astra"),
-      system: BASE.replaceAll("{LANG}", data.language === "en" ? "ENGLISH (US)" : "NEUTRAL SPANISH"),
-      prompt: `Contractor voice note (Spanish):\n"""${data.transcript}"""`,
+      system: BASE.replaceAll("{LANG}", language === "en" ? "ENGLISH (US)" : "NEUTRAL SPANISH"),
+      prompt: `Contractor voice note (Spanish):\n"""${transcript}"""`,
       output: Output.object({ schema: QuoteSchema }),
       providerOptions: {
         openai: {
@@ -75,8 +62,6 @@ export const generateEnglishQuote = createServerFn({ method: "POST" })
     try {
       const quote = await result.output;
       quote.items = quote.items.map((i) => ({ ...i, total: Math.round(i.qty * i.unit_price * 100) / 100 }));
-      const { data: source } = await supabase.rpc("consume_quote", { check_env: data.environment });
-      if (!source || source === "none") return { ok: false as const, needsPayment: true as const, error: "Ya no te quedan presupuestos. Compra más para continuar." };
       return { ok: true as const, quote };
     } catch (e) {
       if (NoObjectGeneratedError.isInstance(e)) return { ok: false as const, error: "No pudimos armar el presupuesto. Intenta describirlo otra vez." };
@@ -86,4 +71,34 @@ export const generateEnglishQuote = createServerFn({ method: "POST" })
       console.error(e);
       return { ok: false as const, error: "Error al generar el presupuesto." };
     }
+}
+
+export const generateEnglishQuote = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => z.object({ transcript: z.string().min(5).max(4000), language: z.enum(["en", "es"]), environment: z.enum(["sandbox", "live"]) }).parse(input))
+  .handler(async ({ data, context }) => {
+    const apiKey = process.env["LOVABLE_API_KEY"];
+    if (!apiKey) throw new Error("AI is not configured.");
+    const { supabase, userId } = context;
+    const [{ data: usage }, { data: subscribed }] = await Promise.all([
+      supabase.from("quote_usage").select("free_used, paid_credits").eq("user_id", userId).eq("environment", data.environment).maybeSingle(),
+      supabase.rpc("has_active_subscription", { user_uuid: userId, check_env: data.environment }),
+    ]);
+    if (!canCreateQuote({ subscribed: !!subscribed, freeUsed: usage?.free_used ?? 0, paidCredits: usage?.paid_credits ?? 0 })) {
+      return { ok: false as const, needsPayment: true as const, error: "Ya usaste tus 3 presupuestos gratis. Paga $1 por presupuesto o activa el Plan Maestro." };
+    }
+    const r = await runQuoteAI(data.transcript, data.language, apiKey);
+    if (!r.ok) return r;
+    const { data: source } = await supabase.rpc("consume_quote", { check_env: data.environment });
+    if (!source || source === "none") return { ok: false as const, needsPayment: true as const, error: "Ya no te quedan presupuestos. Compra más para continuar." };
+    return r;
+  });
+
+// Public, account-free preview for visitors: one quote, never saved or counted. Short input caps AI cost.
+export const generateDemoQuote = createServerFn({ method: "POST" })
+  .inputValidator((input) => z.object({ transcript: z.string().min(5).max(1200), language: z.enum(["en", "es"]) }).parse(input))
+  .handler(async ({ data }) => {
+    const apiKey = process.env["LOVABLE_API_KEY"];
+    if (!apiKey) throw new Error("AI is not configured.");
+    return runQuoteAI(data.transcript, data.language, apiKey);
   });
