@@ -8,7 +8,7 @@
 - [x] Clarify the free offer, add common questions, and repeat the trial action after pricing.
 - [x] Verify homepage navigation and layout on phone and desktop.
 - [x] Simplify the mobile walkthrough and verify readable steps and reduced-motion-friendly animations.
-- [ ] Add iOS detection, native sharing and safe areas while preserving web behavior.
-- [ ] Enable Apple sign-in and authenticated self-service account deletion.
-- [ ] Hide pricing/checkout upsells in iOS and add Spanish privacy policy links.
-- [ ] Run regression tests and verify web/iOS account flows.
+- [x] Add iOS detection, native sharing and safe areas while preserving web behavior.
+- [x] Enable Apple sign-in and authenticated self-service account deletion.
+- [x] Hide pricing/checkout upsells in iOS and add Spanish privacy policy links.
+- [x] Run regression tests and verify authenticated web/iOS presentation and deletion confirmation without deleting the owner's account.
