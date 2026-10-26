@@ -16,6 +16,9 @@ async function upsertSubscription(subscription: any, env: StripeEnv) {
   if (!userId) return console.error("No userId in subscription metadata");
   const item = subscription.items?.data?.[0];
   const db = await admin();
+  const { data: owner, error: ownerError } = await db.auth.admin.getUserById(userId);
+  if (ownerError && ownerError.status !== 404) throw ownerError;
+  if (!owner.user) return; // Late events must not recreate deleted accounts' data.
   await db.from("subscriptions").upsert(
     {
       user_id: userId,
@@ -40,6 +43,9 @@ async function grantCredits(session: any, env: StripeEnv) {
   const qty = parseInt(session.metadata?.quantity ?? "1", 10);
   if (!userId || !qty) return;
   const db = await admin();
+  const { data: owner, error: ownerError } = await db.auth.admin.getUserById(userId);
+  if (ownerError && ownerError.status !== 404) throw ownerError;
+  if (!owner.user) return;
   await db.rpc("add_quote_credits", { _session: session.id, _user: userId, _qty: qty, _env: env });
 }
 

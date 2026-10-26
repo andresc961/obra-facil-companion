@@ -22,3 +22,5 @@
 - Render the homepage workflow infographic as an accessible ordered list with HTML screen illustrations so its labels stay legible at every screen size.
 - Keep workflow animations progressive: content remains visible without JavaScript, reveals activate once on intersection, and reduced-motion disables decorative movement.
 - Use native details/summary disclosures for the homepage FAQ to keep it usable without hydration and avoid introducing a new React-dependent accordion bundle on the public entry page.
+- Centralize native iOS detection in ios-app.ts, read browser signals only in effects/actions, and keep native pricing visibility separate from server-enforced account entitlements.
+- Self-service deletion uses only the middleware-authenticated user ID, cancels real Stripe subscriptions before removing account rows, and ignores later webhook events for missing users to prevent ongoing billing and orphan data.

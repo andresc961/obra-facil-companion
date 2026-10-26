@@ -6,6 +6,9 @@ import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { useAccount } from "@/hooks/use-account";
 import { MONTHLY_PLAN_USD, PRICE_IDS, PRICE_PER_QUOTE_USD, freeLeft } from "@/lib/pricing";
+import { useIsIosNativeApp } from "@/lib/ios-app";
+import { useHydrated } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/precios")({
   staticData: { sitemap: false },
@@ -24,9 +27,22 @@ export const Route = createFileRoute("/_authenticated/precios")({
 });
 
 function Pricing() {
+  const ios = useIsIosNativeApp();
+  const hydrated = useHydrated();
   const { data: acc } = useAccount();
   const [qty, setQty] = useState(5);
   const [checkout, setCheckout] = useState<{ priceId: string; quantity?: number } | null>(null);
+
+  // Do not mount checkout until native detection has run after hydration.
+  if (!hydrated || ios) return <main className="min-h-screen bg-background px-5 pb-16 font-sans text-foreground">
+    <div className="mx-auto max-w-xl">
+      <AppHeader back="/grabar" title="Estado de tu cuenta" />
+      <section className="rounded-lg border border-border bg-card p-5">
+        <p className="font-semibold">{acc ? acc.subscribed ? "Plan Maestro activo · presupuestos ilimitados" : `${freeLeft(acc)} presupuestos gratis disponibles · ${acc.paidCredits} créditos disponibles` : "Consultando tu cuenta…"}</p>
+        <Button asChild className="mt-5 h-auto w-full whitespace-normal py-3"><Link to="/grabar">Volver a crear presupuestos</Link></Button>
+      </section>
+    </div>
+  </main>;
 
   return (
     <main className="min-h-screen bg-background pb-16 font-sans text-foreground">

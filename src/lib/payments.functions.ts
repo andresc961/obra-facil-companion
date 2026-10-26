@@ -98,6 +98,14 @@ export const createPortalSession = createServerFn({ method: "POST" })
   });
 
 /** The signed-in user's quota, plan and company info. */
+export const deleteAccount = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { deleteOwnAccount } = await import("@/lib/account-deletion.server");
+    return deleteOwnAccount(supabaseAdmin, context.userId);
+  });
+
 export const getAccount = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { environment: StripeEnv }) => ({ environment: envOk(data.environment) }))
