@@ -153,7 +153,7 @@ function Index() {
               ["¿Tengo que hablar inglés?", "No. Habla en español y elige español o inglés para el presupuesto, el PDF y el mensaje de tu cliente."],
               ["¿Mi cliente necesita instalar la app?", "No. Tu cliente recibe un PDF y un mensaje que puede abrir sin tener una cuenta en ObraFácil."],
               ["¿Puedo poner el logo de mi empresa?", "Sí. El Plan Maestro de $10 al mes incluye presupuestos ilimitados y la opción de añadir el nombre, logo y contacto de tu empresa."],
-            ].filter(([, answer]) => !ios || !answer.includes("$10 al mes")).map(([question, answer]) => (
+            ].filter(([, answer]) => !ios || !answer?.includes("$10 al mes")).map(([question, answer]) => (
               <details key={question} name="homepage-faq" className="group border-b border-border">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-base font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
                   {question}<ChevronDown aria-hidden="true" className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180 motion-reduce:transition-none" />
