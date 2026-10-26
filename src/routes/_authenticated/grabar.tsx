@@ -15,6 +15,7 @@ import { canCreateQuote, canUseBranding, freeLeft } from "@/lib/pricing";
 import { generateEnglishQuote, type Quote } from "@/lib/quote.functions";
 import { recordWav } from "@/lib/record-wav";
 import { QUOTE_EXAMPLE } from "@/lib/quote-example";
+import { useIsIosNativeApp } from "@/lib/ios-app";
 
 
 export const Route = createFileRoute("/_authenticated/grabar")({
@@ -34,6 +35,7 @@ export const Route = createFileRoute("/_authenticated/grabar")({
 });
 
 function Recorder() {
+  const ios = useIsIosNativeApp();
   const [text, setText] = useState("");
   const [lang, setLang] = useState<"en" | "es">("es");
   const [listening, setListening] = useState(false);
@@ -123,10 +125,10 @@ function Recorder() {
       <div className="mx-auto max-w-xl">
         <AppHeader back="/" />
         {acc && (
-          <Link to={acc.subscribed ? "/cuenta" : "/precios"} className="mb-3 block rounded-xl border border-border bg-card px-4 py-2 text-sm">
+          <Link to={ios || acc.subscribed ? "/cuenta" : "/precios"} className="mb-3 block rounded-xl border border-border bg-card px-4 py-2 text-sm">
             {acc.subscribed ? "⭐ Plan Maestro · ilimitado"
-              : freeLeft(acc) > 0 ? <>🎁 Te quedan <b>{freeLeft(acc)} presupuesto{freeLeft(acc) > 1 ? "s" : ""} gratis</b>{acc.paidCredits > 0 && <> y <b>{acc.paidCredits} pagados</b></>} · <span className="text-primary underline">Ver planes</span></>
-              : <>Ya usaste tus 3 gratis{acc.paidCredits > 0 && <> · tienes <b>{acc.paidCredits} pagados</b></>} · <span className="text-primary underline">Ver planes</span></>}
+              : freeLeft(acc) > 0 ? <>🎁 Te quedan <b>{freeLeft(acc)} presupuesto{freeLeft(acc) > 1 ? "s" : ""} gratis</b>{acc.paidCredits > 0 && <> y <b>{acc.paidCredits} pagados</b></>}{!ios && <> · <span className="text-primary underline">Ver planes</span></>}</>
+              : <>Ya usaste tus 3 gratis{acc.paidCredits > 0 && <> · tienes <b>{acc.paidCredits} pagados</b></>}{!ios && <> · <span className="text-primary underline">Ver planes</span></>}</>}
           </Link>
         )}
 
@@ -172,9 +174,11 @@ function Recorder() {
         </button>
         {needsPayment && (
           <div className="mt-4 rounded-2xl border-2 border-primary bg-card p-5">
+            {ios ? <p className="font-semibold">Has alcanzado el límite de presupuestos incluidos en tu cuenta actual.</p> : <>
             <p className="font-display text-xl">Ya usaste tus 3 presupuestos gratis</p>
             <p className="mt-1 text-sm text-muted-foreground">Paga $1 por presupuesto, o $10 al mes para presupuestos ilimitados con tu logo y datos de empresa.</p>
             <Link to="/precios" className="mt-4 block rounded-xl bg-primary py-3 text-center font-extrabold text-primary-foreground">Ver opciones</Link>
+            </>}
           </div>
         )}
         {error && <p className="mt-3 rounded-lg bg-destructive p-3 text-sm text-destructive-foreground">{error}</p>}
@@ -189,7 +193,7 @@ function Recorder() {
                 </div>
                 <Button asChild variant="link" className="h-auto px-0"><Link to="/cuenta">{acc.profile ? "Editar datos de empresa" : "Agregar nombre, contacto y logo"}</Link></Button>
               </div>
-            ) : <Button asChild variant="link" className="h-auto whitespace-normal px-0"><Link to="/precios">Agregar tu logo y datos con Plan Maestro</Link></Button>}
+            ) : !ios && <Button asChild variant="link" className="h-auto whitespace-normal px-0"><Link to="/precios">Agregar tu logo y datos con Plan Maestro</Link></Button>}
             <button onClick={() => setEditing(!editing)}
               className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-primary py-3 font-extrabold text-primary">
               {editing ? <><Check className="h-5 w-5" /> Listo, ver presupuesto</> : <><Pencil className="h-5 w-5" /> Editar o corregir presupuesto</>}

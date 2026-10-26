@@ -7,7 +7,8 @@ import { Lock, Loader2, ImagePlus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAccount } from "@/hooks/use-account";
-import { createPortalSession } from "@/lib/payments.functions";
+import { createPortalSession, deleteAccount } from "@/lib/payments.functions";
+import { useIsIosNativeApp } from "@/lib/ios-app";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { canUseBranding, freeLeft } from "@/lib/pricing";
 
@@ -41,6 +42,11 @@ async function shrinkLogo(file: File): Promise<string> {
 }
 
 function Account() {
+  const ios = useIsIosNativeApp();
+  const removeAccount = useServerFn(deleteAccount);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteMsg, setDeleteMsg] = useState<string | null>(null);
   const { data: acc } = useAccount();
   const qc = useQueryClient();
   const navigate = useNavigate();
@@ -89,6 +95,20 @@ function Account() {
     } catch { tab?.close(); setPortalMsg("No pudimos abrir la página de tu suscripción. Intenta de nuevo."); }
   };
 
+  const remove = async () => {
+    setDeleting(true); setDeleteMsg(null);
+    try {
+      await removeAccount();
+      await qc.cancelQueries(); qc.clear();
+      localStorage.removeItem("obrafacil-demo-text");
+      localStorage.removeItem("obrafacil-demo-used");
+      await supabase.auth.signOut({ scope: "local" });
+      await navigate({ to: "/auth", replace: true });
+    } catch (error) {
+      setDeleteMsg(error instanceof Error ? error.message : "No pudimos eliminar tu cuenta. Intenta de nuevo.");
+    } finally { setDeleting(false); }
+  };
+
   const field = (k: keyof typeof form, label: string, type = "text") => (
     <input type={type} aria-label={label} disabled={!branding} value={form[k]} onChange={(e) => setForm({ ...form, [k]: e.target.value })} placeholder={label}
       className="w-full rounded-xl border border-border bg-background p-3 outline-none focus:border-primary disabled:opacity-50" />
@@ -108,14 +128,14 @@ function Account() {
                 {acc.subscription?.cancel_at_period_end && acc.subscription.current_period_end && (
                   <p className="text-sm text-muted-foreground">Termina el {new Date(acc.subscription.current_period_end).toLocaleDateString("es")}</p>
                 )}
-                <button onClick={manage} className="mt-3 text-sm text-primary underline">Administrar o cancelar suscripción</button>
+                {!ios && <button onClick={manage} className="mt-3 text-sm text-primary underline">Administrar o cancelar suscripción</button>}
                 {portalMsg && <p role="alert" className="mt-2 text-sm text-muted-foreground">{portalMsg}</p>}
               </>
             ) : (
               <>
                 <p className="mt-1 text-xl font-extrabold">{freeLeft(acc) > 0 ? `🎁 Te quedan ${freeLeft(acc)} presupuesto${freeLeft(acc) > 1 ? "s" : ""} gratis` : "Sin plan"}</p>
                 {acc.paidCredits > 0 && <p className="text-sm text-muted-foreground">{acc.paidCredits} presupuesto{acc.paidCredits > 1 ? "s" : ""} pagados.</p>}
-                <Link to="/precios" className="mt-3 inline-block rounded-xl bg-primary px-4 py-3 font-extrabold text-primary-foreground">Comprar o activar Plan Maestro</Link>
+                {!ios && <Link to="/precios" className="mt-3 inline-block rounded-xl bg-primary px-4 py-3 font-extrabold text-primary-foreground">Comprar o activar Plan Maestro</Link>}
               </>
             )
           ) : <Loader2 className="mt-2 h-5 w-5 animate-spin" />}
@@ -126,7 +146,7 @@ function Account() {
           {!branding && (
             <div className="mt-3 flex items-start gap-2 rounded-xl border border-primary p-3 text-sm">
               <Lock className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-              <span>Disponible con el Plan Maestro ($10/mes). <Link to="/precios" className="font-bold text-primary underline">Activar</Link></span>
+              <span>{ios ? "Disponible para cuentas con Plan Maestro activo." : <>Disponible con el Plan Maestro ($10/mes). <Link to="/precios" className="font-bold text-primary underline">Activar</Link></>}</span>
             </div>
           )}
           <div className="mt-4 space-y-3">
@@ -155,7 +175,17 @@ function Account() {
           </div>
         </section>
 
-        <button onClick={signOut} className="mt-8 w-full rounded-xl border border-border py-3 text-sm text-muted-foreground">Cerrar sesión</button>
+        <Button onClick={signOut} variant="outline" disabled={deleting} className="mt-8 h-auto w-full rounded-xl py-3 text-sm text-muted-foreground">Cerrar sesión</Button>
+        <Button onClick={() => { setConfirmDelete(true); setDeleteMsg(null); }} variant="ghost" disabled={deleting} className="mt-3 h-auto w-full whitespace-normal py-3 text-destructive"><Trash2 /> Eliminar mi cuenta y datos</Button>
+        {confirmDelete && <div className="mt-3 border-t border-border pt-4">
+          <p className="text-sm text-muted-foreground">Esta acción es permanente. Se eliminarán tu cuenta, datos de empresa y créditos restantes, y se cancelarán tus suscripciones sin reembolso automático.</p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Button variant="destructive" disabled={deleting} onClick={remove}>{deleting && <Loader2 className="animate-spin" />} {deleting ? "Eliminando…" : "Sí, eliminar cuenta"}</Button>
+            <Button variant="outline" disabled={deleting} onClick={() => setConfirmDelete(false)}>Cancelar</Button>
+          </div>
+        </div>}
+        {deleteMsg && <p role="alert" className="mt-3 text-sm text-destructive">{deleteMsg}</p>}
+        <div className="mt-6 text-center"><Button asChild variant="link"><Link to="/privacidad">Privacidad</Link></Button></div>
       </div>
     </main>
   );

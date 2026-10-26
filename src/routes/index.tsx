@@ -4,6 +4,7 @@ import logoIcon from "@/assets/logo-icon.png";
 import { useSessionUser } from "@/hooks/use-session-user";
 import { HowItWorks } from "@/components/HowItWorks";
 import { Button } from "@/components/ui/button";
+import { useIsIosNativeApp } from "@/lib/ios-app";
 
 export const Route = createFileRoute("/")({
   staticData: { sitemap: true },
@@ -36,6 +37,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const { ready, user } = useSessionUser();
+  const ios = useIsIosNativeApp();
   return (
     <main className="min-h-screen bg-background font-sans text-foreground">
       <div className="hazard h-2" />
@@ -115,7 +117,7 @@ function Index() {
 
       <HowItWorks />
 
-      <section className="mx-auto max-w-xl px-5 py-10">
+      {!ios && <section className="mx-auto max-w-xl px-5 py-10">
         <h2 className="font-display text-2xl">Precios simples</h2>
         <p className="mt-2 text-muted-foreground">Tus primeros 3 presupuestos son gratis. Después tú escoges:</p>
         <div className="mt-6 space-y-4">
@@ -139,7 +141,7 @@ function Index() {
           </Button>
           {!user && <p className="mt-3 text-sm text-muted-foreground">Una prueba sin cuenta ni tarjeta. Regístrate para descargar el PDF y enviarlo.</p>}
         </div>
-      </section>
+      </section>}
 
       <section className="border-t border-border px-5 py-10" aria-labelledby="homepage-questions">
         <div className="mx-auto max-w-xl">
@@ -151,7 +153,7 @@ function Index() {
               ["¿Tengo que hablar inglés?", "No. Habla en español y elige español o inglés para el presupuesto, el PDF y el mensaje de tu cliente."],
               ["¿Mi cliente necesita instalar la app?", "No. Tu cliente recibe un PDF y un mensaje que puede abrir sin tener una cuenta en ObraFácil."],
               ["¿Puedo poner el logo de mi empresa?", "Sí. El Plan Maestro de $10 al mes incluye presupuestos ilimitados y la opción de añadir el nombre, logo y contacto de tu empresa."],
-            ].map(([question, answer]) => (
+            ].filter(([, answer]) => !ios || !answer?.includes("$10 al mes")).map(([question, answer]) => (
               <details key={question} name="homepage-faq" className="group border-b border-border">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-base font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
                   {question}<ChevronDown aria-hidden="true" className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180 motion-reduce:transition-none" />
@@ -163,7 +165,7 @@ function Index() {
         </div>
       </section>
 
-      <footer className="mx-auto max-w-xl px-5 py-8 text-center text-sm text-muted-foreground">© ObraFacil.biz</footer>
+      <footer className="mx-auto max-w-xl px-5 py-8 text-center text-sm text-muted-foreground">© ObraFacil.biz <Button asChild variant="link"><Link to="/privacidad">Privacidad</Link></Button></footer>
       <div className="hazard h-2" />
     </main>
   );
