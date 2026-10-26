@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
+import { Button } from "@/components/ui/button";
 
 type AuthSearch = { modo?: "entrar" | "crear" | undefined };
 
@@ -56,10 +57,12 @@ function AuthPage() {
     setBusy(false);
   };
 
-  const google = async () => {
+  const social = async (provider: "apple" | "google") => {
     setMsg({});
-    const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/auth" });
-    if (r.error) setMsg({ err: "No se pudo entrar con Google." });
+    try {
+      const r = await lovable.auth.signInWithOAuth(provider, { redirect_uri: window.location.origin + "/auth" });
+      if (r.error) setMsg({ err: `No se pudo entrar con ${provider === "apple" ? "Apple" : "Google"}.` });
+    } catch { setMsg({ err: "No se pudo iniciar sesión. Intenta de nuevo." }); }
   };
 
   return (
@@ -69,7 +72,8 @@ function AuthPage() {
         <h1 className="mt-6 font-display text-3xl">{mode === "up" ? "Crea tu cuenta gratis" : "Entra a tu cuenta"}</h1>
         <p className="mt-2 text-muted-foreground">Tus primeros 3 presupuestos son gratis.</p>
 
-        <button onClick={google} className="mt-6 w-full rounded-xl bg-paper py-4 font-extrabold text-paper-foreground">Continuar con Google</button>
+        <Button onClick={() => social("apple")} variant="outline" className="mt-6 h-auto w-full rounded-xl bg-paper py-4 font-extrabold text-paper-foreground">Continuar con Apple</Button>
+        <Button onClick={() => social("google")} variant="outline" className="mt-3 h-auto w-full rounded-xl bg-paper py-4 font-extrabold text-paper-foreground">Continuar con Google</Button>
         <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground"><span className="h-px flex-1 bg-border" />o con tu correo<span className="h-px flex-1 bg-border" /></div>
 
         <form onSubmit={submit} className="space-y-3">
